@@ -139,7 +139,7 @@ class FakeQuotesRepository @Inject constructor() {
             val quotesWithFavorites = sampleQuotes.map { quote ->
                 quote.copy(isFavorite = favoriteQuotes.contains(quote.id))
             }
-            Result.success(quotesWithFavorites)
+            Result.success(quotesWithFavorites.shuffled())
         } catch (e: Exception) {
             Result.failure(e)
         }

@@ -58,7 +58,13 @@ class QuotesViewModel @Inject constructor(
 
     private fun refreshQuotes() {
         viewModelScope.launch {
-            _state.value = _state.value.copy(isRefreshing = true, error = null)
+            _state.value = _state.value.copy(
+                isRefreshing = true,
+                error = null,
+                isLoading = true,
+                quotes = emptyList(),
+                filteredQuotes = emptyList()
+            )
 
             repository.refreshQuotes()
                 .onSuccess { quotes ->
