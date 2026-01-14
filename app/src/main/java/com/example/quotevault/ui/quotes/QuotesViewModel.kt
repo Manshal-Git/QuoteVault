@@ -27,6 +27,8 @@ class QuotesViewModel @Inject constructor(
             is QuotesIntent.RefreshQuotes -> refreshQuotes()
             is QuotesIntent.ToggleFavorite -> toggleFavorite(intent.quoteId)
             is QuotesIntent.ShareQuote -> shareQuote(intent.quote)
+            is QuotesIntent.SearchQuotes -> searchQuotes(intent.query)
+            is QuotesIntent.FilterByCategory -> filterByCategory(intent.category)
             is QuotesIntent.ClearError -> clearError()
         }
     }
@@ -37,8 +39,11 @@ class QuotesViewModel @Inject constructor(
 
             repository.getQuotes()
                 .onSuccess { quotes ->
+                    val categories = quotes.map { it.category }.distinct().sorted()
                     _state.value = _state.value.copy(
                         quotes = quotes,
+                        filteredQuotes = quotes,
+                        availableCategories = categories,
                         isLoading = false
                     )
                 }
@@ -57,10 +62,13 @@ class QuotesViewModel @Inject constructor(
 
             repository.refreshQuotes()
                 .onSuccess { quotes ->
+                    val categories = quotes.map { it.category }.distinct().sorted()
                     _state.value = _state.value.copy(
                         quotes = quotes,
+                        availableCategories = categories,
                         isRefreshing = false
                     )
+                    applyFilters()
                 }
                 .onFailure { error ->
                     _state.value = _state.value.copy(
@@ -81,7 +89,15 @@ class QuotesViewModel @Inject constructor(
                     quote
                 }
             }
-            _state.value = _state.value.copy(quotes = updatedQuotes)
+            val updatedFilteredQuotes = _state.value.filteredQuotes.map { quote ->
+                if (quote.id == quoteId) {
+                    quote.copy(isFavorite = !quote.isFavorite)
+                } else {
+                    quote
+                }
+            }
+            _state.value =
+                _state.value.copy(quotes = updatedQuotes, filteredQuotes = updatedFilteredQuotes)
 
             repository.toggleFavorite(quoteId)
                 .onFailure { error ->
@@ -93,8 +109,16 @@ class QuotesViewModel @Inject constructor(
                             quote
                         }
                     }
+                    val revertedFilteredQuotes = _state.value.filteredQuotes.map { quote ->
+                        if (quote.id == quoteId) {
+                            quote.copy(isFavorite = !quote.isFavorite)
+                        } else {
+                            quote
+                        }
+                    }
                     _state.value = _state.value.copy(
                         quotes = revertedQuotes,
+                        filteredQuotes = revertedFilteredQuotes,
                         error = error.message ?: "Failed to update favorite"
                     )
                 }
@@ -106,6 +130,33 @@ class QuotesViewModel @Inject constructor(
         // For now, we'll just log it or handle it in the UI layer
     }
 
+    private fun searchQuotes(query: String) {
+        _state.value = _state.value.copy(searchQuery = query)
+        applyFilters()
+    }
+
+    private fun filterByCategory(category: String?) {
+        _state.value = _state.value.copy(selectedCategory = category)
+        applyFilters()
+    }
+
+    private fun applyFilters() {
+        val query = _state.value.searchQuery.lowercase()
+        val category = _state.value.selectedCategory
+
+        val filtered = _state.value.quotes.filter { quote ->
+            val matchesSearch = query.isEmpty() ||
+                    quote.text.lowercase().contains(query) ||
+                    quote.author.lowercase().contains(query)
+
+            val matchesCategory = category == null || quote.category == category
+
+            matchesSearch && matchesCategory
+        }
+
+        _state.value = _state.value.copy(filteredQuotes = filtered)
+    }
+    
     private fun clearError() {
         _state.value = _state.value.copy(error = null)
     }
