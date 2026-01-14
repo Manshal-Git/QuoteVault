@@ -1,10 +1,13 @@
 package com.example.quotevault.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,6 +23,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -27,11 +31,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.example.quotevault.ui.theme.Dimensions
 import com.example.quotevault.ui.theme.Error
+import com.example.quotevault.ui.theme.PlayfairDisplay
+import com.example.quotevault.ui.theme.QuoteVaultTheme
 
 /**
  * CategoryChip displays a category label with consistent styling.
@@ -96,66 +108,85 @@ fun QuoteCard(
     onCardClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier
+    Column(
+        modifier = Modifier
             .fillMaxWidth()
+            .dropShadow(
+                shape = RoundedCornerShape(Dimensions.radiusMD),
+                shadow = Shadow(
+                    radius = 3.dp,
+                    spread = 1.dp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
+                    offset = DpOffset(0.dp, 1.dp)
+                )
+            ).background(
+                color = MaterialTheme.colorScheme.surface,
+                RoundedCornerShape(Dimensions.radiusMD)
+            )
+            .padding(Dimensions.spaceMD)
             .clickable(onClick = onCardClick),
-        shape = RoundedCornerShape(Dimensions.radiusMD),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = Dimensions.cardElevation
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+        verticalArrangement = Arrangement.spacedBy(Dimensions.spaceSM)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(Dimensions.spaceMD),
-            verticalArrangement = Arrangement.spacedBy(Dimensions.spaceSM)
+        // Category chip at top
+        CategoryChip(category = category)
+
+        Spacer(Modifier.height(Dimensions.spaceSM))
+
+        // Quote text with headline typography
+        Text(
+            text = quote,
+            style = MaterialTheme.typography.headlineLarge,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        // Author with attribution dash
+        Text(
+            text = "— $author",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        // Action buttons row
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Category chip at top
-            CategoryChip(category = category)
-            
-            // Quote text with headline typography
-            Text(
-                text = quote,
-                style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            
-            // Author with attribution dash
-            Text(
-                text = "— $author",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            
-            // Action buttons row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Favorite button with toggle states
-                IconButton(onClick = onFavoriteClick) {
-                    Icon(
-                        imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                        contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-                        tint = if (isFavorite) Error else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                
-                // Share button
-                IconButton(onClick = onShareClick) {
-                    Icon(
-                        imageVector = Icons.Filled.Share,
-                        contentDescription = "Share quote",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+            // Favorite button with toggle states
+            IconButton(onClick = onFavoriteClick) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                    contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                    tint = if (isFavorite) Error else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            // Share button
+            IconButton(onClick = onShareClick) {
+                Icon(
+                    imageVector = Icons.Filled.Share,
+                    contentDescription = "Share quote",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
+    }
+}
+
+@PreviewLightDark()
+@Composable
+fun PreviewQuoteCard() {
+    // Replace 'YourAppTheme' with your actual MaterialTheme wrapper
+    QuoteVaultTheme {
+        QuoteCard(
+            quote = "Believe you can and you're halfway there.",
+            author = "Theodore Roosevelt",
+            category = "Motivation",
+            isFavorite = true,
+            onFavoriteClick = { /* Handle click */ },
+            onShareClick = { /* Handle share */ },
+            onCardClick = { /* Handle navigation */ }
+        )
     }
 }
 
@@ -209,6 +240,17 @@ fun FeaturedQuoteCard(
             style = MaterialTheme.typography.bodyLarge,
             color = androidx.compose.ui.graphics.Color.White,
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun PreviewFeaturedQuoteCard() {
+    QuoteVaultTheme {
+        FeaturedQuoteCard(
+            quote = "The only way to do great work is to love what you do.",
+            author = "Steve Jobs"
         )
     }
 }

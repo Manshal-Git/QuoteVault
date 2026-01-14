@@ -5,11 +5,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.quotevault.ui.auth.AuthScreen
+import com.example.quotevault.ui.home.MainScreen
 
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    startDestination: String = Screen.Auth.route
+    startDestination: String = Screen.Home.route
 ) {
     NavHost(
         navController = navController,
@@ -30,8 +31,7 @@ fun NavGraph(
         }
         
         composable(Screen.Home.route) {
-            // Placeholder for home screen
-            // You can replace this with your actual home screen later
+            MainScreen()
         }
     }
 }
