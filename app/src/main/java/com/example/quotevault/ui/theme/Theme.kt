@@ -30,17 +30,18 @@ private val LightColorScheme = lightColorScheme(
 private val DarkColorScheme = darkColorScheme(
     primary = Primary,
     onPrimary = OnPrimaryDark,
-    primaryContainer = PrimaryDark,
+    primaryContainer = PrimaryContainerDark,
     secondary = Secondary,
     onSecondary = OnSecondaryDark,
-    secondaryContainer = SecondaryDark,
+    secondaryContainer = SecondaryContainerDark,
     background = BackgroundDark,
     onBackground = OnBackgroundDark,
     surface = SurfaceDark,
     onSurface = OnSurfaceDark,
     surfaceVariant = SurfaceVariantDark,
     error = Error,
-    errorContainer = ErrorContainer
+    errorContainer = ErrorContainer,
+    outline = DividerDark
 )
 
 // Shape definitions with rounded corners

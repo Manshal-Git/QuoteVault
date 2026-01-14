@@ -4,15 +4,16 @@ import androidx.compose.ui.graphics.Color
 
 // Primary Colors (Indigo-based)
 val Primary = Color(0xFF6366F1)
-val PrimaryDark = Color(0xFF4F46E5)
 val PrimaryLight = Color(0xFFA5B4FC)
 val PrimaryContainer = Color(0xFFE0E7FF)
+val PrimaryContainerDark = Color(0xFF000824)
 
 // Secondary Colors (Amber-based)
 val Secondary = Color(0xFFF59E0B)
 val SecondaryDark = Color(0xFFD97706)
 val SecondaryLight = Color(0xFFFCD34D)
 val SecondaryContainer = Color(0xFFFEF3C7)
+val SecondaryContainerDark = Color(0xFF372c01)
 
 // Light Theme Colors
 val BackgroundLight = Color(0xFFFAFAFA)
@@ -31,6 +32,11 @@ val OnBackgroundDark = Color(0xFFE5E5E5)
 val OnSurfaceDark = Color(0xFFE5E5E5)
 val OnPrimaryDark = Color(0xFFFFFFFF)
 val OnSecondaryDark = Color(0xFF1A1A1A)
+
+// Additional Dark Theme Colors
+val TextSecondaryDark = Color(0xFF8B9299)
+val TextTertiaryDark = Color(0xFF6B7280)
+val DividerDark = Color(0xFF374151)
 
 // Semantic Colors
 val Success = Color(0xFF10B981)

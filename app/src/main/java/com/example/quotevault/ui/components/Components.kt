@@ -273,9 +273,10 @@ fun QuotesSearchBar(
 @Composable
 fun PrimaryButton(
     text: String,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    icon: ImageVector? = null
+    enabled: Boolean = true,
+    icon: ImageVector? = null,
+    onClick: () -> Unit
 ) {
     Button(
         onClick = onClick,
@@ -285,7 +286,8 @@ fun PrimaryButton(
         shape = RoundedCornerShape(Dimensions.radiusMD),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary
-        )
+        ),
+        enabled = enabled,
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(Dimensions.spaceSM),
@@ -303,7 +305,7 @@ fun PrimaryButton(
             // Button text
             Text(
                 text = text,
-                style = MaterialTheme.typography.labelLarge,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onPrimary
             )
         }

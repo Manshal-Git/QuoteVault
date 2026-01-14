@@ -1,30 +1,32 @@
 package com.example.quotevault.ui.auth
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.quotevault.ui.components.PrimaryButton
+import com.example.quotevault.ui.theme.*
 
 @Composable
 fun AuthScreen(
@@ -43,81 +45,35 @@ fun AuthScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF0F1419))
+            .background(
+                Brush.horizontalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primaryContainer,
+                        MaterialTheme.colorScheme.secondaryContainer,
+                    )
+                )
+            )
+            .statusBarsPadding()
+            .imePadding()
+            .verticalScroll(rememberScrollState())
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(24.dp)
         ) {
-            // Top Bar
-            IconButton(
-                onClick = onNavigateBack,
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.White
-                )
-            }
-            
-            Text(
-                text = "AUTHENTICATION",
-                color = Color(0xFF8B9299),
-                fontSize = 12.sp,
-                letterSpacing = 1.5.sp,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-            
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            // Hero Card
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(
-                        Brush.horizontalGradient(
-                            colors = listOf(
-                                Color(0xFF2C5F5F),
-                                Color(0xFF4A7C7C)
-                            )
-                        )
-                    )
-            ) {
-                Box(
-                    modifier = Modifier
-                        .padding(24.dp)
-                        .size(48.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFF2563EB)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "\"\"",
-                        color = Color.White,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(32.dp))
-            
+            Spacer(Modifier.height(132.dp))
             // Title
             Text(
                 text = "Inspiration Awaits",
-                color = Color.White,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.displayLarge,
+                color = MaterialTheme.colorScheme.onBackground
             )
             
             Text(
                 text = "Sign in to access your daily wisdom\nand curated quotes.",
-                color = Color(0xFF8B9299),
-                fontSize = 14.sp,
+                style = MaterialTheme.typography.bodyMedium,
+                color = TextSecondaryDark,
                 modifier = Modifier.padding(top = 8.dp)
             )
             
@@ -126,9 +82,8 @@ fun AuthScreen(
             // Email Field
             Text(
                 text = "Email Address",
-                color = Color.White,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                color = MaterialTheme.colorScheme.onBackground
             )
             
             Spacer(modifier = Modifier.height(8.dp))
@@ -139,27 +94,27 @@ fun AuthScreen(
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = {
                     Text(
-                        text = "name@example.com",
-                        color = Color(0xFF6B7280)
+                        text = "Enter your email",
+                        color = TextTertiaryDark
                     )
                 },
                 trailingIcon = {
                     Icon(
                         imageVector = Icons.Default.Email,
                         contentDescription = null,
-                        tint = Color(0xFF6B7280)
+                        tint = TextTertiaryDark
                     )
                 },
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedBorderColor = Color(0xFF374151),
-                    unfocusedBorderColor = Color(0xFF374151),
-                    focusedContainerColor = Color(0xFF1F2937),
-                    unfocusedContainerColor = Color(0xFF1F2937)
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
+                    focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface
                 ),
                 shape = RoundedCornerShape(12.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
                 isError = state.emailError != null,
                 singleLine = true
             )
@@ -167,8 +122,8 @@ fun AuthScreen(
             if (state.emailError != null) {
                 Text(
                     text = state.emailError!!,
-                    color = Color(0xFFEF4444),
-                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(start = 4.dp, top = 4.dp)
                 )
             }
@@ -183,20 +138,9 @@ fun AuthScreen(
             ) {
                 Text(
                     text = "Password",
-                    color = Color.White,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                    color = MaterialTheme.colorScheme.onBackground
                 )
-                
-                TextButton(
-                    onClick = { viewModel.handleIntent(AuthIntent.ForgotPasswordClicked) }
-                ) {
-                    Text(
-                        text = "Forgot?",
-                        color = Color(0xFF2563EB),
-                        fontSize = 14.sp
-                    )
-                }
             }
             
             Spacer(modifier = Modifier.height(8.dp))
@@ -207,25 +151,25 @@ fun AuthScreen(
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = {
                     Text(
-                        text = "••••••••",
-                        color = Color(0xFF6B7280)
+                        text = "Enter password",
+                        color = TextTertiaryDark
                     )
                 },
                 trailingIcon = {
                     Icon(
                         imageVector = Icons.Default.Lock,
                         contentDescription = null,
-                        tint = Color(0xFF6B7280)
+                        tint = TextTertiaryDark
                     )
                 },
                 visualTransformation = PasswordVisualTransformation(),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedBorderColor = Color(0xFF374151),
-                    unfocusedBorderColor = Color(0xFF374151),
-                    focusedContainerColor = Color(0xFF1F2937),
-                    unfocusedContainerColor = Color(0xFF1F2937)
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
+                    focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface
                 ),
                 shape = RoundedCornerShape(12.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -236,36 +180,42 @@ fun AuthScreen(
             if (state.passwordError != null) {
                 Text(
                     text = state.passwordError!!,
-                    color = Color(0xFFEF4444),
-                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+                )
+            }
+
+            TextButton(
+                modifier = Modifier
+                    .align(Alignment.End),
+                onClick = { viewModel.handleIntent(AuthIntent.ForgotPasswordClicked) }
+            ) {
+                Text(
+                    text = "Forgot password?",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
             
             Spacer(modifier = Modifier.height(24.dp))
             
             // Sign In Button
-            Button(
-                onClick = { viewModel.handleIntent(AuthIntent.SignInClicked) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF2563EB)
-                ),
-                shape = RoundedCornerShape(12.dp),
-                enabled = !state.isLoading
-            ) {
+            Box {
+                PrimaryButton(
+                    onClick = { viewModel.handleIntent(AuthIntent.SignInClicked) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    text = if (!state.isLoading) "Sign In" else "",
+                    enabled = state.email.isNotEmpty() && state.password.isNotEmpty(),
+                )
                 if (state.isLoading) {
                     CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
+                        modifier = Modifier
+                            .size(24.dp)
+                            .align(Alignment.Center),
                         color = Color.White
-                    )
-                } else {
-                    Text(
-                        text = "Sign In",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
                     )
                 }
             }
@@ -279,17 +229,17 @@ fun AuthScreen(
             ) {
                 HorizontalDivider(
                     modifier = Modifier.weight(1f),
-                    color = Color(0xFF374151)
+                    color = MaterialTheme.colorScheme.outline
                 )
                 Text(
                     text = "OR CONTINUE WITH",
-                    color = Color(0xFF6B7280),
-                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = TextTertiaryDark,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
                 HorizontalDivider(
                     modifier = Modifier.weight(1f),
-                    color = Color(0xFF374151)
+                    color = MaterialTheme.colorScheme.outline
                 )
             }
             
@@ -306,7 +256,7 @@ fun AuthScreen(
                         .weight(1f)
                         .height(56.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = Color(0xFF1F2937)
+                        containerColor = MaterialTheme.colorScheme.surface
                     ),
                     border = null,
                     shape = RoundedCornerShape(12.dp),
@@ -314,8 +264,8 @@ fun AuthScreen(
                 ) {
                     Text(
                         text = "G  Google",
-                        color = Color.White,
-                        fontSize = 14.sp
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 
@@ -325,7 +275,7 @@ fun AuthScreen(
                         .weight(1f)
                         .height(56.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = Color(0xFF1F2937)
+                        containerColor = MaterialTheme.colorScheme.surface
                     ),
                     border = null,
                     shape = RoundedCornerShape(12.dp),
@@ -333,8 +283,8 @@ fun AuthScreen(
                 ) {
                     Text(
                         text = "  Apple",
-                        color = Color.White,
-                        fontSize = 14.sp
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -344,12 +294,13 @@ fun AuthScreen(
             // Sign Up Link
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "Don't have an account?  ",
-                    color = Color(0xFF8B9299),
-                    fontSize = 14.sp
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondaryDark
                 )
                 TextButton(
                     onClick = { viewModel.handleIntent(AuthIntent.SignUpClicked) },
@@ -357,15 +308,14 @@ fun AuthScreen(
                 ) {
                     Text(
                         text = "Create one",
-                        color = Color(0xFF2563EB),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
         }
-        
-        // Error Snackbar
+
+        // Error SnackBar
         if (state.error != null) {
             Snackbar(
                 modifier = Modifier
