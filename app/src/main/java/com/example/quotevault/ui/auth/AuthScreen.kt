@@ -1,5 +1,10 @@
 package com.example.quotevault.ui.auth
 
+import android.R.attr.enabled
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -16,7 +21,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -26,7 +30,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.quotevault.ui.components.PrimaryButton
-import com.example.quotevault.ui.theme.*
+import com.example.quotevault.ui.theme.TextSecondaryDark
+import com.example.quotevault.ui.theme.TextTertiaryDark
 
 @Composable
 fun AuthScreen(
@@ -41,6 +46,24 @@ fun AuthScreen(
             onAuthSuccess()
         }
     }
+
+    val animatedBackgroundColor1 by animateColorAsState(
+        targetValue = if (state.isSignInMode) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.secondaryContainer
+        },
+        animationSpec = tween(durationMillis = 400)
+    )
+
+    val animatedBackgroundColor2 by animateColorAsState(
+        targetValue = if (state.isSignInMode) {
+            MaterialTheme.colorScheme.secondaryContainer
+        } else {
+            MaterialTheme.colorScheme.primaryContainer
+        },
+        animationSpec = tween(durationMillis = 400)
+    )
     
     Box(
         modifier = Modifier
@@ -48,8 +71,8 @@ fun AuthScreen(
             .background(
                 Brush.horizontalGradient(
                     colors = listOf(
-                        MaterialTheme.colorScheme.primaryContainer,
-                        MaterialTheme.colorScheme.secondaryContainer,
+                        animatedBackgroundColor1,
+                        animatedBackgroundColor2
                     )
                 )
             )
@@ -71,7 +94,7 @@ fun AuthScreen(
             )
             
             Text(
-                text = "Sign in to access your daily wisdom\nand curated quotes.",
+                text = "Sign ${if (state.isSignInMode) "In" else "Up"} to access your daily wisdom\nand curated quotes.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = TextSecondaryDark,
                 modifier = Modifier.padding(top = 8.dp)
@@ -186,28 +209,37 @@ fun AuthScreen(
                 )
             }
 
-            TextButton(
+            AnimatedVisibility(
+                visible = state.isSignInMode,
                 modifier = Modifier
-                    .align(Alignment.End),
-                onClick = { viewModel.handleIntent(AuthIntent.ForgotPasswordClicked) }
+                    .align(Alignment.End)
             ) {
-                Text(
-                    text = "Forgot password?",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                TextButton(
+                    onClick = { viewModel.handleIntent(AuthIntent.ForgotPasswordClicked) }
+                ) {
+                    Text(
+                        text = "Forgot password?",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
             
             Spacer(modifier = Modifier.height(24.dp))
             
             // Sign In Button
             Box {
+                val primaryButtonText = if (!state.isLoading) {
+                    if (state.isSignInMode) "Sign In" else "Sign Up"
+                } else {
+                    ""
+                }
                 PrimaryButton(
-                    onClick = { viewModel.handleIntent(AuthIntent.SignInClicked) },
+                    onClick = { viewModel.handleIntent(AuthIntent.CallToActionClicked) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    text = if (!state.isLoading) "Sign In" else "",
+                    text = primaryButtonText,
                     enabled = state.email.isNotEmpty() && state.password.isNotEmpty(),
                 )
                 if (state.isLoading) {
@@ -297,20 +329,38 @@ fun AuthScreen(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Don't have an account?  ",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondaryDark
-                )
-                TextButton(
-                    onClick = { viewModel.handleIntent(AuthIntent.SignUpClicked) },
-                    contentPadding = PaddingValues(0.dp)
-                ) {
+                if (state.isSignInMode) {
                     Text(
-                        text = "Create one",
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
-                        color = MaterialTheme.colorScheme.primary
+                        text = "Don't have an account?  ",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondaryDark
                     )
+                    TextButton(
+                        onClick = { viewModel.handleIntent(AuthIntent.SignUpOptionClicked) },
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Text(
+                            text = "Create one",
+                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                } else {
+                    Text(
+                        text = "Already have an account?  ",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondaryDark
+                    )
+                    TextButton(
+                        onClick = { viewModel.handleIntent(AuthIntent.SignInOptionClicked) },
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Text(
+                            text = "Sign in",
+                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
         }

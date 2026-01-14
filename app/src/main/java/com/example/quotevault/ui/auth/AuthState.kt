@@ -7,5 +7,6 @@ data class AuthState(
     val error: String? = null,
     val isSignedIn: Boolean = false,
     val emailError: String? = null,
-    val passwordError: String? = null
+    val passwordError: String? = null,
+    val isSignInMode: Boolean = true
 )

@@ -1,35 +1,49 @@
 package com.example.quotevault.ui.auth
 
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val repository: FakeAuthRepository
 ) : ViewModel() {
     
     private val _state = MutableStateFlow(AuthState())
     val state: StateFlow<AuthState> = _state.asStateFlow()
-    
+
     fun handleIntent(intent: AuthIntent) {
         when (intent) {
             is AuthIntent.EmailChanged -> updateEmail(intent.email)
             is AuthIntent.PasswordChanged -> updatePassword(intent.password)
-            is AuthIntent.SignInClicked -> signIn()
-            is AuthIntent.SignUpClicked -> signUp()
+            is AuthIntent.CallToActionClicked -> onCallToActionClicked()
             is AuthIntent.GoogleSignInClicked -> signInWithGoogle()
             is AuthIntent.AppleSignInClicked -> signInWithApple()
             is AuthIntent.ForgotPasswordClicked -> forgotPassword()
             is AuthIntent.ClearError -> clearError()
+            is AuthIntent.SignInOptionClicked -> setSignInMode(true)
+            is AuthIntent.SignUpOptionClicked -> setSignInMode(false)
         }
     }
-    
+
+    private fun onCallToActionClicked() {
+        if (_state.value.isSignInMode) {
+            signIn()
+        } else {
+            signUp()
+        }
+    }
+
     private fun updateEmail(email: String) {
         _state.value = _state.value.copy(
             email = email,
@@ -43,6 +57,14 @@ class AuthViewModel @Inject constructor(
             passwordError = null
         )
     }
+
+    private fun setSignInMode(value: Boolean) {
+        _state.update {
+            it.copy(
+                isSignInMode = value
+            )
+        }
+    }
     
     private fun signIn() {
         if (!validateInputs()) return
@@ -52,6 +74,7 @@ class AuthViewModel @Inject constructor(
             
             repository.signIn(_state.value.email, _state.value.password)
                 .onSuccess {
+                    showToast("Sign in successful")
                     _state.value = _state.value.copy(
                         isLoading = false,
                         isSignedIn = true
@@ -74,6 +97,7 @@ class AuthViewModel @Inject constructor(
             
             repository.signUp(_state.value.email, _state.value.password)
                 .onSuccess {
+                    showToast("Sign up successful")
                     _state.value = _state.value.copy(
                         isLoading = false,
                         isSignedIn = true
@@ -173,5 +197,9 @@ class AuthViewModel @Inject constructor(
     
     private fun clearError() {
         _state.value = _state.value.copy(error = null)
+    }
+
+    private fun showToast(msg: String) {
+        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
     }
 }
