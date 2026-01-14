@@ -1,16 +1,20 @@
-package com.example.quotevault.ui.quotes
+package com.example.quotevault.ui.favourites
 
 import com.example.quotevault.data.FavouritesDataSource
+import com.example.quotevault.ui.quotes.Quote
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class FakeQuotesRepository @Inject constructor(
+class FavouritesRepository @Inject constructor(
     private val favouritesDataSource: FavouritesDataSource
 ) {
     
-    private val sampleQuotes = listOf(
+    // Sample quotes data - in real app, this would come from a database or API
+    private val allQuotes = listOf(
         Quote(
             id = "1",
             text = "The only way to do great work is to love what you do.",
@@ -133,32 +137,63 @@ class FakeQuotesRepository @Inject constructor(
         )
     )
     
-    suspend fun getQuotes(): Result<List<Quote>> {
-        delay(1000) // Simulate network delay
+    /**
+     * Get all favorite quotes as a Flow that updates when favorites change
+     */
+    fun getFavoriteQuotesFlow(): Flow<List<Quote>> {
+        return favouritesDataSource.favoriteQuoteIds.map { favoriteIds ->
+            allQuotes.filter { quote ->
+                favoriteIds.contains(quote.id)
+            }.map { quote ->
+                quote.copy(isFavorite = true)
+            }
+        }
+    }
+    
+    /**
+     * Get favorite quotes (one-time fetch)
+     */
+    suspend fun getFavoriteQuotes(): Result<List<Quote>> {
+        delay(500) // Simulate network delay
         
         return try {
-            val quotesWithFavorites = sampleQuotes.map { quote ->
-                quote.copy(isFavorite = favouritesDataSource.isFavorite(quote.id))
+            val favoriteIds = favouritesDataSource.getAllFavorites()
+            val favorites = allQuotes.filter { quote ->
+                favoriteIds.contains(quote.id)
+            }.map { quote ->
+                quote.copy(isFavorite = true)
             }
-            Result.success(quotesWithFavorites.shuffled())
+            Result.success(favorites)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
     
-    suspend fun toggleFavorite(quoteId: String): Result<Boolean> {
+    /**
+     * Remove a quote from favorites
+     */
+    suspend fun removeFavorite(quoteId: String): Result<Unit> {
         delay(300) // Simulate network delay
         
         return try {
-            val isFavorite = favouritesDataSource.toggleFavorite(quoteId)
-            Result.success(isFavorite)
+            favouritesDataSource.removeFavorite(quoteId)
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
     
-    suspend fun refreshQuotes(): Result<List<Quote>> {
-        delay(1500) // Simulate network delay
-        return getQuotes()
+    /**
+     * Clear all favorites
+     */
+    suspend fun clearAllFavorites(): Result<Unit> {
+        delay(300) // Simulate network delay
+        
+        return try {
+            favouritesDataSource.clearAllFavorites()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }
