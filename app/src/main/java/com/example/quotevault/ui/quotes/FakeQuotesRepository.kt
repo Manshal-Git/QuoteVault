@@ -134,6 +134,32 @@ class FakeQuotesRepository @Inject constructor(
         )
     )
     
+    /**
+     * Get quote of the day - returns a consistent quote for the current day
+     * Uses day of year to ensure same quote throughout the day
+     */
+    suspend fun getQuoteOfTheDay(): Result<Quote> {
+        delay(800) // Simulate network delay
+        
+        return try {
+            val calendar = java.util.Calendar.getInstance()
+            val dayOfYear = calendar.get(java.util.Calendar.DAY_OF_YEAR)
+            val quoteIndex = dayOfYear % sampleQuotes.size
+            val quote = sampleQuotes[quoteIndex]
+            
+            val quoteWithFavorite = quote.copy(
+                isFavorite = collectionsDataSource.isQuoteInCollection(
+                    quote.id,
+                    Collection.DEFAULT_COLLECTION_ID
+                )
+            )
+            
+            Result.success(quoteWithFavorite)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
     suspend fun getQuotes(): Result<List<Quote>> {
         delay(1000) // Simulate network delay
         

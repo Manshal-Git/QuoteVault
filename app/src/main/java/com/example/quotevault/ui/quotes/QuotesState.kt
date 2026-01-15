@@ -5,6 +5,8 @@ import com.example.quotevault.data.Collection
 data class QuotesState(
     val quotes: List<Quote> = emptyList(),
     val filteredQuotes: List<Quote> = emptyList(),
+    val quoteOfTheDay: Quote? = null,
+    val isLoadingQuoteOfTheDay: Boolean = false,
     val isLoading: Boolean = false,
     val error: String? = null,
     val isRefreshing: Boolean = false,

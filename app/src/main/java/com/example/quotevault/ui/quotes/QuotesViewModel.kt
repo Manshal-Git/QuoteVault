@@ -21,6 +21,7 @@ class QuotesViewModel @Inject constructor(
 
     init {
         handleIntent(QuotesIntent.LoadQuotes)
+        handleIntent(QuotesIntent.LoadQuoteOfTheDay)
         observeCollections()
     }
     
@@ -40,6 +41,7 @@ class QuotesViewModel @Inject constructor(
     fun handleIntent(intent: QuotesIntent) {
         when (intent) {
             is QuotesIntent.LoadQuotes -> loadQuotes()
+            is QuotesIntent.LoadQuoteOfTheDay -> loadQuoteOfTheDay()
             is QuotesIntent.RefreshQuotes -> refreshQuotes()
             is QuotesIntent.ToggleFavorite -> toggleFavorite(intent.quoteId)
             is QuotesIntent.OpenCollectionSheet -> openCollectionSheet(intent.quoteId)
@@ -97,6 +99,26 @@ class QuotesViewModel @Inject constructor(
     private fun createCollection(name: String, description: String) {
         viewModelScope.launch {
             collectionsDataSource.createCollection(name, description)
+        }
+    }
+    
+    private fun loadQuoteOfTheDay() {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoadingQuoteOfTheDay = true)
+            
+            repository.getQuoteOfTheDay()
+                .onSuccess { quote ->
+                    _state.value = _state.value.copy(
+                        quoteOfTheDay = quote,
+                        isLoadingQuoteOfTheDay = false
+                    )
+                }
+                .onFailure { error ->
+                    _state.value = _state.value.copy(
+                        isLoadingQuoteOfTheDay = false,
+                        error = error.message ?: "Failed to load quote of the day"
+                    )
+                }
         }
     }
 

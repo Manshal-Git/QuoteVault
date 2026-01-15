@@ -2,6 +2,7 @@ package com.example.quotevault.ui.quotes
 
 sealed class QuotesIntent {
     object LoadQuotes : QuotesIntent()
+    object LoadQuoteOfTheDay : QuotesIntent()
     object RefreshQuotes : QuotesIntent()
     data class ToggleFavorite(val quoteId: String) : QuotesIntent()
     data class OpenCollectionSheet(val quoteId: String) : QuotesIntent()
