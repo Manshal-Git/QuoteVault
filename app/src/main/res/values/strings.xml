@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">QuoteVault</string>
+    <string name="heading_appearance">Appearance</string>
+    <string name="description_appearance">Theme, font size, and appearance</string>
 </resources>

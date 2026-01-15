@@ -2,13 +2,7 @@ package com.example.quotevault.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -22,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.quotevault.navigation.BottomNavItem
 import com.example.quotevault.navigation.bottomNavItems
 import com.example.quotevault.ui.favourites.FavouritesScreen
+import com.example.quotevault.ui.profile.PersonalizationScreen
 import com.example.quotevault.ui.profile.ProfileScreen
 import com.example.quotevault.ui.quotes.QuotesDiscoveryScreen
 
@@ -31,16 +26,19 @@ fun MainScreen() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     
+    val shouldShowBottomBar = currentDestination?.route in bottomNavItems.map { it.route }
+    
     Scaffold(
         bottomBar = {
-            NavigationBar(
-                containerColor = MaterialTheme.colorScheme.surface,
-                contentColor = MaterialTheme.colorScheme.onSurface
-            ) {
-                bottomNavItems.forEach { item ->
-                    val isSelected = currentDestination?.hierarchy?.any { 
-                        it.route == item.route 
-                    } == true
+            if (shouldShowBottomBar) {
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                ) {
+                    bottomNavItems.forEach { item ->
+                        val isSelected = currentDestination?.hierarchy?.any { 
+                            it.route == item.route 
+                        } == true
                     
                     NavigationBarItem(
                         icon = {
@@ -75,6 +73,7 @@ fun MainScreen() {
                     )
                 }
             }
+            }
         }
     ) { paddingValues ->
         NavHost(
@@ -100,7 +99,19 @@ fun MainScreen() {
             }
             
             composable(BottomNavItem.Profile.route) {
-                ProfileScreen()
+                ProfileScreen(
+                    onNavigateToPersonalization = {
+                        navController.navigate("personalization")
+                    }
+                )
+            }
+            
+            composable("personalization") {
+                PersonalizationScreen(
+                    onNavigateBack = {
+                        navController.popBackStack()
+                    }
+                )
             }
         }
     }

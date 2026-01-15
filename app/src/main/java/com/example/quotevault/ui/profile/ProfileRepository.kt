@@ -47,6 +47,17 @@ class ProfileRepository @Inject constructor(
         }
     }
     
+    suspend fun updateThemeOption(themeOption: String): Result<Unit> {
+        return try {
+            preferencesDataStore.updateThemeOption(themeOption)
+            // Simulate server sync
+            syncToServer("theme_option", themeOption)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
     private suspend fun syncToServer(key: String, value: String) {
         // Simulate network delay
         delay(500)

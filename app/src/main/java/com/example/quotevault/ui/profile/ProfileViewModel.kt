@@ -31,11 +31,12 @@ class ProfileViewModel @Inject constructor(
         when (intent) {
             is ProfileIntent.UpdateDarkMode -> updateDarkMode(intent.isDarkMode)
             is ProfileIntent.UpdateFontSize -> updateFontSize(intent.fontSize)
+            is ProfileIntent.UpdateThemeOption -> updateThemeOption(intent.themeOption)
             is ProfileIntent.SignOut -> signOut()
             is ProfileIntent.ClearError -> clearError()
         }
     }
-
+    
     private fun loadUserPreferences() {
         viewModelScope.launch {
             repository.userPreferences.collect { preferences ->
@@ -46,11 +47,11 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
-
+    
     private fun updateDarkMode(isDarkMode: Boolean) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isSyncing = true, error = null)
-
+            
             repository.updateDarkMode(isDarkMode)
                 .onSuccess {
                     _state.value = _state.value.copy(isSyncing = false)
@@ -63,11 +64,11 @@ class ProfileViewModel @Inject constructor(
                 }
         }
     }
-
+    
     private fun updateFontSize(fontSize: Float) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isSyncing = true, error = null)
-
+            
             repository.updateFontSize(fontSize)
                 .onSuccess {
                     _state.value = _state.value.copy(isSyncing = false)
@@ -76,6 +77,23 @@ class ProfileViewModel @Inject constructor(
                     _state.value = _state.value.copy(
                         isSyncing = false,
                         error = error.message ?: "Failed to update font size"
+                    )
+                }
+        }
+    }
+    
+    private fun updateThemeOption(themeOption: String) {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isSyncing = true, error = null)
+            
+            repository.updateThemeOption(themeOption)
+                .onSuccess {
+                    _state.value = _state.value.copy(isSyncing = false)
+                }
+                .onFailure { error ->
+                    _state.value = _state.value.copy(
+                        isSyncing = false,
+                        error = error.message ?: "Failed to update theme"
                     )
                 }
         }
@@ -90,7 +108,7 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
-
+    
     private fun clearError() {
         _state.value = _state.value.copy(error = null)
     }
