@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -11,17 +13,18 @@ import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import com.example.quotevault.ui.quotes.Quote
-import com.example.quotevault.ui.theme.GradientEnd
-import com.example.quotevault.ui.theme.GradientStart
+import com.example.quotevault.utils.QuoteCardStyle
 import com.example.quotevault.utils.QuoteImageGenerator
 import java.io.File
 import java.io.FileOutputStream
@@ -33,6 +36,7 @@ fun ShareQuoteDialog(
     onShareComplete: (String) -> Unit = {}
 ) {
     val context = LocalContext.current
+    var selectedStyle by remember { mutableStateOf(QuoteCardStyle.GRADIENT) }
     
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -45,25 +49,19 @@ fun ShareQuoteDialog(
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // Quote Preview
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(
-                            brush = Brush.linearGradient(
-                                colors = listOf(GradientStart, GradientEnd)
-                            ),
-                            shape = RoundedCornerShape(12.dp)
-                        )
                         .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = quote.text,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = androidx.compose.ui.graphics.Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center
                     )
                     
@@ -72,9 +70,30 @@ fun ShareQuoteDialog(
                     Text(
                         text = "— ${quote.author}",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = androidx.compose.ui.graphics.Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center
                     )
+                }
+                
+                // Style Selection
+                Text(
+                    text = "Choose card style:",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    QuoteCardStyle.entries.forEach { style ->
+                        StyleOption(
+                            style = style,
+                            isSelected = selectedStyle == style,
+                            onClick = { selectedStyle = style },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
                 
                 Text(
@@ -110,7 +129,7 @@ fun ShareQuoteDialog(
                 // Share as Image
                 TextButton(
                     onClick = {
-                        shareAsImage(context, quote) { success ->
+                        shareAsImage(context, quote, selectedStyle) { success ->
                             if (success) {
                                 onShareComplete("Shared as image")
                             } else {
@@ -133,7 +152,7 @@ fun ShareQuoteDialog(
                 // Save as Image
                 TextButton(
                     onClick = {
-                        saveAsImage(context, quote) { success ->
+                        saveAsImage(context, quote, selectedStyle) { success ->
                             if (success) {
                                 onShareComplete("Saved to gallery")
                             } else {
@@ -164,6 +183,74 @@ fun ShareQuoteDialog(
     )
 }
 
+@Composable
+private fun StyleOption(
+    style: QuoteCardStyle,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .border(
+                width = if (isSelected) 2.dp else 1.dp,
+                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                shape = RoundedCornerShape(8.dp)
+            )
+            .clickable(onClick = onClick)
+            .padding(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        // Style preview
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(getStylePreviewBackground(style))
+        )
+        
+        Text(
+            text = style.displayName,
+            style = MaterialTheme.typography.labelMedium,
+            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+        )
+        
+        Text(
+            text = style.description,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun getStylePreviewBackground(style: QuoteCardStyle): Brush {
+    return when (style) {
+        QuoteCardStyle.GRADIENT -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF6366F1),
+                Color(0xFF9333EA)
+            )
+        )
+        QuoteCardStyle.MINIMAL -> Brush.linearGradient(
+            colors = listOf(
+                Color.White,
+                Color(0xFFF9FAFB)
+            )
+        )
+        QuoteCardStyle.ELEGANT -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF1F2937),
+                Color(0xFF111827)
+            )
+        )
+    }
+}
+
 private fun shareAsText(context: Context, quote: Quote) {
     val shareText = "\"${quote.text}\"\n\n— ${quote.author}\n\n#QuoteVault"
     
@@ -176,10 +263,10 @@ private fun shareAsText(context: Context, quote: Quote) {
     context.startActivity(Intent.createChooser(intent, "Share Quote"))
 }
 
-private fun shareAsImage(context: Context, quote: Quote, onResult: (Boolean) -> Unit) {
+private fun shareAsImage(context: Context, quote: Quote, style: QuoteCardStyle, onResult: (Boolean) -> Unit) {
     try {
-        val bitmap = QuoteImageGenerator.generateQuoteImage(quote)
-        val file = saveBitmapToCache(context, bitmap, "quote_${quote.id}.png")
+        val bitmap = QuoteImageGenerator.generateQuoteImage(quote, style)
+        val file = saveBitmapToCache(context, bitmap, "quote_${quote.id}_${style.name.lowercase()}.png")
         
         val uri = FileProvider.getUriForFile(
             context,
@@ -201,14 +288,11 @@ private fun shareAsImage(context: Context, quote: Quote, onResult: (Boolean) -> 
     }
 }
 
-private fun saveAsImage(
-    context: Context,
-    quote: Quote,
-    onResult: (Boolean) -> Unit
-) {
+private fun saveAsImage(context: Context, quote: Quote, style: QuoteCardStyle, onResult: (Boolean) -> Unit) {
     try {
-        val bitmap = QuoteImageGenerator.generateQuoteImage(quote)
-        QuoteImageGenerator.saveBitmapToGallery(context, bitmap, "quote_${quote.id}")
+        val bitmap = QuoteImageGenerator.generateQuoteImage(quote, style)
+        val filename = "quote_${quote.id}_${style.name.lowercase()}_${System.currentTimeMillis()}"
+        QuoteImageGenerator.saveBitmapToGallery(context, bitmap, filename)
         onResult(true)
     } catch (e: Exception) {
         e.printStackTrace()
@@ -216,11 +300,7 @@ private fun saveAsImage(
     }
 }
 
-private fun saveBitmapToCache(
-    context: Context,
-    bitmap: Bitmap,
-    filename: String
-): File {
+private fun saveBitmapToCache(context: Context, bitmap: Bitmap, filename: String): File {
     val cacheDir = File(context.cacheDir, "shared_images")
     if (!cacheDir.exists()) {
         cacheDir.mkdirs()

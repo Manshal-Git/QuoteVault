@@ -12,8 +12,6 @@ import com.example.quotevault.ui.quotes.Quote
 import java.io.File
 import java.io.FileOutputStream
 
-private const val APP_NAME = "QuoteVault"
-
 object QuoteImageGenerator {
     
     private const val IMAGE_WIDTH = 1080
@@ -22,98 +20,149 @@ object QuoteImageGenerator {
     private const val QUOTE_TEXT_SIZE = 48f
     private const val AUTHOR_TEXT_SIZE = 36f
     
-    fun generateQuoteImage(quote: Quote): Bitmap {
+    fun generateQuoteImage(quote: Quote, style: QuoteCardStyle = QuoteCardStyle.GRADIENT): Bitmap {
         val bitmap = createBitmap(IMAGE_WIDTH, IMAGE_HEIGHT)
         val canvas = Canvas(bitmap)
         
-        // Draw gradient background
-        drawGradientBackground(canvas)
-        
-        // Draw quote text
-        drawQuoteText(canvas, quote.text)
-        
-        // Draw author
-        drawAuthor(canvas, quote.author)
-        
-        // Draw category badge
-        drawCategory(canvas, quote.category)
+        when (style) {
+            QuoteCardStyle.GRADIENT -> drawGradientStyle(canvas, quote)
+            QuoteCardStyle.MINIMAL -> drawMinimalStyle(canvas, quote)
+            QuoteCardStyle.ELEGANT -> drawElegantStyle(canvas, quote)
+        }
         
         return bitmap
     }
     
-    private fun drawGradientBackground(canvas: Canvas) {
+    private fun drawGradientStyle(canvas: Canvas, quote: Quote) {
+        // Draw gradient background
         val gradient = LinearGradient(
             0f, 0f, 0f, IMAGE_HEIGHT.toFloat(),
             intArrayOf(
-                "#6366F1".toColorInt(), // Primary color
-                "#9333EA".toColorInt()  // Gradient end
+                "#6366F1".toColorInt(),
+                "#9333EA".toColorInt()
             ),
             null,
             Shader.TileMode.CLAMP
         )
         
-        val paint = Paint().apply {
+        canvas.drawRect(0f, 0f, IMAGE_WIDTH.toFloat(), IMAGE_HEIGHT.toFloat(), Paint().apply {
             shader = gradient
-        }
+        })
         
-        canvas.drawRect(0f, 0f, IMAGE_WIDTH.toFloat(), IMAGE_HEIGHT.toFloat(), paint)
+        drawCategory(canvas, quote.category, "#E0E7FF".toColorInt())
+        drawQuoteText(canvas, quote.text, Color.WHITE, QUOTE_TEXT_SIZE, Typeface.SERIF)
+        drawAuthor(canvas, quote.author, Color.WHITE)
     }
     
-    private fun drawQuoteText(canvas: Canvas, text: String) {
+    private fun drawMinimalStyle(canvas: Canvas, quote: Quote) {
+        canvas.drawColor(Color.WHITE)
+        
+        // Draw border
+        val borderPaint = Paint().apply {
+            color = "#E5E7EB".toColorInt()
+            style = Paint.Style.STROKE
+            strokeWidth = 8f
+        }
+        canvas.drawRect(40f, 40f, IMAGE_WIDTH - 40f, IMAGE_HEIGHT - 40f, borderPaint)
+        
+        drawCategory(canvas, quote.category, "#6366F1".toColorInt())
+        drawQuoteText(canvas, quote.text, "#1F2937".toColorInt(), QUOTE_TEXT_SIZE, Typeface.SERIF)
+        drawAuthor(canvas, quote.author, "#6B7280".toColorInt())
+    }
+    
+    private fun drawElegantStyle(canvas: Canvas, quote: Quote) {
+        // Dark gradient background
+        val gradient = LinearGradient(
+            0f, 0f, IMAGE_WIDTH.toFloat(), IMAGE_HEIGHT.toFloat(),
+            intArrayOf(
+                "#1F2937".toColorInt(),
+                "#111827".toColorInt()
+            ),
+            null,
+            Shader.TileMode.CLAMP
+        )
+        
+        canvas.drawRect(0f, 0f, IMAGE_WIDTH.toFloat(), IMAGE_HEIGHT.toFloat(), Paint().apply {
+            shader = gradient
+        })
+        
+        drawCornerDecoration(canvas)
+        drawCategory(canvas, quote.category, "#F59E0B".toColorInt())
+        drawQuoteText(canvas, quote.text,
+            "#FCD34D".toColorInt(), QUOTE_TEXT_SIZE + 4f, Typeface.SERIF)
+        drawAuthor(canvas, quote.author, "#FDE68A".toColorInt())
+    }
+    
+    private fun drawCornerDecoration(canvas: Canvas) {
         val paint = Paint().apply {
-            color = Color.WHITE
-            textSize = QUOTE_TEXT_SIZE
-            typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
+            color = "#F59E0B".toColorInt()
+            style = Paint.Style.STROKE
+            strokeWidth = 4f
+        }
+        
+        val cornerSize = 80f
+        
+        // Top-left
+        canvas.drawLine(PADDING, PADDING, PADDING + cornerSize, PADDING, paint)
+        canvas.drawLine(PADDING, PADDING, PADDING, PADDING + cornerSize, paint)
+        
+        // Top-right
+        canvas.drawLine(IMAGE_WIDTH - PADDING, PADDING, IMAGE_WIDTH - PADDING - cornerSize, PADDING, paint)
+        canvas.drawLine(IMAGE_WIDTH - PADDING, PADDING, IMAGE_WIDTH - PADDING, PADDING + cornerSize, paint)
+        
+        // Bottom-left
+        canvas.drawLine(PADDING, IMAGE_HEIGHT - PADDING, PADDING + cornerSize, IMAGE_HEIGHT - PADDING, paint)
+        canvas.drawLine(PADDING, IMAGE_HEIGHT - PADDING, PADDING, IMAGE_HEIGHT - PADDING - cornerSize, paint)
+        
+        // Bottom-right
+        canvas.drawLine(IMAGE_WIDTH - PADDING, IMAGE_HEIGHT - PADDING, IMAGE_WIDTH - PADDING - cornerSize, IMAGE_HEIGHT - PADDING, paint)
+        canvas.drawLine(IMAGE_WIDTH - PADDING, IMAGE_HEIGHT - PADDING, IMAGE_WIDTH - PADDING, IMAGE_HEIGHT - PADDING - cornerSize, paint)
+    }
+    
+    private fun drawQuoteText(canvas: Canvas, text: String, color: Int, textSize: Float, typeface: Typeface) {
+        val paint = Paint().apply {
+            this.color = color
+            this.textSize = textSize
+            this.typeface = Typeface.create(typeface, Typeface.BOLD)
             isAntiAlias = true
             textAlign = Paint.Align.CENTER
         }
         
-        // Add quotation marks
         val quotedText = "\"$text\""
-        
-        // Split text into lines
         val lines = wrapText(quotedText, paint, IMAGE_WIDTH - (PADDING * 2))
         
-        // Calculate starting Y position to center text vertically
         val lineHeight = paint.descent() - paint.ascent()
         val totalHeight = lineHeight * lines.size
         var y = (IMAGE_HEIGHT - totalHeight) / 2 + Math.abs(paint.ascent())
         
-        // Draw each line
         lines.forEach { line ->
             canvas.drawText(line, IMAGE_WIDTH / 2f, y, paint)
             y += lineHeight
         }
     }
     
-    private fun drawAuthor(canvas: Canvas, author: String) {
+    private fun drawAuthor(canvas: Canvas, author: String, color: Int) {
         val paint = Paint().apply {
-            color = Color.WHITE
+            this.color = color
             textSize = AUTHOR_TEXT_SIZE
             typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL)
             isAntiAlias = true
             textAlign = Paint.Align.CENTER
         }
         
-        val authorText = "— $author"
-        val y = IMAGE_HEIGHT - PADDING - 100f
-        
-        canvas.drawText(authorText, IMAGE_WIDTH / 2f, y, paint)
+        canvas.drawText("— $author", IMAGE_WIDTH / 2f, IMAGE_HEIGHT - PADDING - 100f, paint)
     }
     
-    private fun drawCategory(canvas: Canvas, category: String) {
+    private fun drawCategory(canvas: Canvas, category: String, color: Int) {
         val paint = Paint().apply {
-            color = "#E0E7FF".toColorInt() // Light primary color
+            this.color = color
             textSize = 28f
             typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
             isAntiAlias = true
             textAlign = Paint.Align.CENTER
         }
         
-        val categoryText = category.uppercase()
-        val y = PADDING
-        
-        canvas.drawText(categoryText, IMAGE_WIDTH / 2f, y, paint)
+        canvas.drawText(category.uppercase(), IMAGE_WIDTH / 2f, PADDING, paint)
     }
     
     private fun wrapText(text: String, paint: Paint, maxWidth: Float): List<String> {
@@ -146,11 +195,10 @@ object QuoteImageGenerator {
             val mimeType = "image/png"
             
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // Use MediaStore for Android 10+
                 val contentValues = ContentValues().apply {
                     put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
                     put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
-                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/$APP_NAME")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/QuoteVault")
                 }
                 
                 val resolver = context.contentResolver
@@ -163,10 +211,9 @@ object QuoteImageGenerator {
                     true
                 } ?: false
             } else {
-                // Use legacy storage for older Android versions
                 val imagesDir = Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_PICTURES
-                ).toString() + "/$APP_NAME"
+                ).toString() + "/QuoteVault"
                 
                 val dir = File(imagesDir)
                 if (!dir.exists()) {
@@ -178,7 +225,6 @@ object QuoteImageGenerator {
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
                 }
                 
-                // Notify gallery
                 val values = ContentValues().apply {
                     put(MediaStore.Images.Media.DATA, file.absolutePath)
                     put(MediaStore.Images.Media.MIME_TYPE, mimeType)
