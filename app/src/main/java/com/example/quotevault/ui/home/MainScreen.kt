@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.quotevault.navigation.BottomNavItem
 import com.example.quotevault.navigation.bottomNavItems
 import com.example.quotevault.ui.favourites.FavouritesScreen
+import com.example.quotevault.ui.profile.AccountDataScreen
 import com.example.quotevault.ui.profile.PersonalizationScreen
 import com.example.quotevault.ui.profile.ProfileScreen
 import com.example.quotevault.ui.quotes.QuotesDiscoveryScreen
@@ -102,12 +103,23 @@ fun MainScreen() {
                 ProfileScreen(
                     onNavigateToPersonalization = {
                         navController.navigate("personalization")
+                    },
+                    onNavigateToAccountData = {
+                        navController.navigate("account_data")
                     }
                 )
             }
             
             composable("personalization") {
                 PersonalizationScreen(
+                    onNavigateBack = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+            
+            composable("account_data") {
+                AccountDataScreen(
                     onNavigateBack = {
                         navController.popBackStack()
                     }

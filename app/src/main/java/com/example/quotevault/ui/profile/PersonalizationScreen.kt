@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.quotevault.R
+import com.example.quotevault.ui.components.Toolbar
 import com.example.quotevault.ui.theme.ThemeOption
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,22 +30,10 @@ fun PersonalizationScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     Column {
-        Row(
-            modifier = Modifier
-                .height(56.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onNavigateBack) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back"
-                )
-            }
-            Text(
-                text = stringResource(R.string.heading_appearance),
-                style = MaterialTheme.typography.headlineLarge
-            )
-        }
+        Toolbar(
+            title = stringResource(id = R.string.heading_appearance),
+            onNavigateBack = onNavigateBack
+        )
         Column(
             modifier = Modifier
                 .fillMaxSize()

@@ -1,9 +1,7 @@
 package com.example.quotevault.ui.auth
 
-import android.R.attr.enabled
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -37,7 +35,8 @@ import com.example.quotevault.ui.theme.TextTertiaryDark
 fun AuthScreen(
     viewModel: AuthViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit = {},
-    onAuthSuccess: () -> Unit = {}
+    onAuthSuccess: () -> Unit = {},
+    onNavigateToPasswordReset: (email: String) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     
@@ -215,7 +214,7 @@ fun AuthScreen(
                     .align(Alignment.End)
             ) {
                 TextButton(
-                    onClick = { viewModel.handleIntent(AuthIntent.ForgotPasswordClicked) }
+                    onClick = { onNavigateToPasswordReset(state.email) }
                 ) {
                     Text(
                         text = "Forgot password?",

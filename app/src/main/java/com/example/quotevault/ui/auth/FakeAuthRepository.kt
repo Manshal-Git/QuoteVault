@@ -50,4 +50,13 @@ class FakeAuthRepository @Inject constructor() {
             Result.failure(Exception("Invalid email"))
         }
     }
+    
+    suspend fun changePassword(currentPassword: String, newPassword: String): Result<Unit> {
+        delay(1500)
+        return if (currentPassword.isNotEmpty() && newPassword.length >= 6) {
+            Result.success(Unit)
+        } else {
+            Result.failure(Exception("Invalid password"))
+        }
+    }
 }

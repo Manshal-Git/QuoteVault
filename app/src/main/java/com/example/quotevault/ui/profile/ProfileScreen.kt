@@ -29,6 +29,7 @@ import com.example.quotevault.R
 @Composable
 fun ProfileScreen(
     onNavigateToPersonalization: () -> Unit = {},
+    onNavigateToAccountData: () -> Unit = {},
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -121,10 +122,10 @@ fun ProfileScreen(
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
             SettingsCard(
-                title = "Account and Data",
+                title = stringResource(R.string.heading_account_and_data),
                 description = "Manage your account and data settings",
                 icon = Icons.Rounded.Person,
-                onClick = onNavigateToPersonalization
+                onClick = onNavigateToAccountData
             )
         }
         
