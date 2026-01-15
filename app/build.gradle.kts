@@ -65,6 +65,10 @@ dependencies {
 
     implementation(libs.coil.compose)
     implementation(libs.androidx.datastore.preferences)
+
+    implementation(libs.androidx.glance)
+    implementation(libs.androidx.glance.appwidget)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
