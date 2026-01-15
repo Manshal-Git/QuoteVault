@@ -26,6 +26,11 @@ class FakeAuthRepository @Inject constructor() {
             Result.failure(Exception("Invalid email or password"))
         }
     }
+
+    suspend fun signOut(): Result<Unit> {
+        delay(1000)
+        return Result.success(Unit)
+    }
     
     suspend fun signInWithGoogle(): Result<Unit> {
         delay(1000)
