@@ -21,6 +21,9 @@ class UserPreferencesDataStore @Inject constructor(
         val USER_NAME = stringPreferencesKey("user_name")
         val USER_AVATAR_URL = stringPreferencesKey("user_avatar_url")
         val THEME_OPTION = stringPreferencesKey("theme_option")
+        val DAILY_QUOTE_NOTIFICATIONS_ENABLED = booleanPreferencesKey("daily_quote_notifications_enabled")
+        val NOTIFICATION_HOUR = intPreferencesKey("notification_hour")
+        val NOTIFICATION_MINUTE = intPreferencesKey("notification_minute")
     }
     
     val userPreferences: Flow<UserPreferences> = context.dataStore.data
@@ -30,7 +33,10 @@ class UserPreferencesDataStore @Inject constructor(
                 fontSize = preferences[PreferencesKeys.FONT_SIZE] ?: 1.0f,
                 userName = preferences[PreferencesKeys.USER_NAME] ?: "Guest User",
                 userAvatarUrl = preferences[PreferencesKeys.USER_AVATAR_URL] ?: "",
-                themeOption = preferences[PreferencesKeys.THEME_OPTION] ?: "INDIGO"
+                themeOption = preferences[PreferencesKeys.THEME_OPTION] ?: "INDIGO",
+                dailyQuoteNotificationsEnabled = preferences[PreferencesKeys.DAILY_QUOTE_NOTIFICATIONS_ENABLED] ?: false,
+                notificationHour = preferences[PreferencesKeys.NOTIFICATION_HOUR] ?: 9,
+                notificationMinute = preferences[PreferencesKeys.NOTIFICATION_MINUTE] ?: 0
             )
         }
     
@@ -58,6 +64,19 @@ class UserPreferencesDataStore @Inject constructor(
             preferences[PreferencesKeys.THEME_OPTION] = themeOption
         }
     }
+    
+    suspend fun updateDailyQuoteNotifications(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.DAILY_QUOTE_NOTIFICATIONS_ENABLED] = enabled
+        }
+    }
+    
+    suspend fun updateNotificationTime(hour: Int, minute: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.NOTIFICATION_HOUR] = hour
+            preferences[PreferencesKeys.NOTIFICATION_MINUTE] = minute
+        }
+    }
 }
 
 data class UserPreferences(
@@ -65,5 +84,8 @@ data class UserPreferences(
     val fontSize: Float = 1.0f,
     val userName: String = "Guest User",
     val userAvatarUrl: String = "",
-    val themeOption: String = "INDIGO"
+    val themeOption: String = "INDIGO",
+    val dailyQuoteNotificationsEnabled: Boolean = false,
+    val notificationHour: Int = 9, // 9 AM default
+    val notificationMinute: Int = 0
 )

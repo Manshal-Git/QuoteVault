@@ -18,6 +18,7 @@ import com.example.quotevault.navigation.bottomNavItems
 import com.example.quotevault.ui.favourites.FavouritesScreen
 import com.example.quotevault.ui.profile.AccountDataScreen
 import com.example.quotevault.ui.profile.AppearanceScreen
+import com.example.quotevault.ui.profile.NotificationPreferencesScreen
 import com.example.quotevault.ui.profile.ProfileScreen
 import com.example.quotevault.ui.quotes.QuotesDiscoveryScreen
 
@@ -106,6 +107,9 @@ fun MainScreen() {
                     },
                     onNavigateToAccountData = {
                         navController.navigate("account_data")
+                    },
+                    onNavigateToNotifications = {
+                        navController.navigate("notifications")
                     }
                 )
             }
@@ -120,6 +124,14 @@ fun MainScreen() {
             
             composable("account_data") {
                 AccountDataScreen(
+                    onNavigateBack = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+            
+            composable("notifications") {
+                NotificationPreferencesScreen(
                     onNavigateBack = {
                         navController.popBackStack()
                     }

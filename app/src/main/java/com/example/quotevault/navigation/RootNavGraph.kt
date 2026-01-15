@@ -13,7 +13,7 @@ private const val EMAIL = "email"
 @Composable
 fun RootNavGraph(
     navController: NavHostController,
-    startDestination: String = Screen.Auth.route
+    startDestination: String = Screen.Home.route
 ) {
     NavHost(
         navController = navController,

@@ -58,6 +58,28 @@ class ProfileRepository @Inject constructor(
         }
     }
     
+    suspend fun updateDailyQuoteNotifications(enabled: Boolean): Result<Unit> {
+        return try {
+            preferencesDataStore.updateDailyQuoteNotifications(enabled)
+            // Simulate server sync
+            syncToServer("daily_quote_notifications", enabled.toString())
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    suspend fun updateNotificationTime(hour: Int, minute: Int): Result<Unit> {
+        return try {
+            preferencesDataStore.updateNotificationTime(hour, minute)
+            // Simulate server sync
+            syncToServer("notification_time", "$hour:$minute")
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
     private suspend fun syncToServer(key: String, value: String) {
         // Simulate network delay
         delay(500)

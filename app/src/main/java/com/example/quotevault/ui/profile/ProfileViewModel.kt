@@ -32,6 +32,8 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.UpdateDarkMode -> updateDarkMode(intent.isDarkMode)
             is ProfileIntent.UpdateFontSize -> updateFontSize(intent.fontSize)
             is ProfileIntent.UpdateThemeOption -> updateThemeOption(intent.themeOption)
+            is ProfileIntent.UpdateDailyQuoteNotifications -> updateDailyQuoteNotifications(intent.enabled)
+            is ProfileIntent.UpdateNotificationTime -> updateNotificationTime(intent.hour, intent.minute)
             is ProfileIntent.SignOut -> signOut()
             is ProfileIntent.ClearError -> clearError()
         }
@@ -94,6 +96,47 @@ class ProfileViewModel @Inject constructor(
                     _state.value = _state.value.copy(
                         isSyncing = false,
                         error = error.message ?: "Failed to update theme"
+                    )
+                }
+        }
+    }
+    
+    private fun updateDailyQuoteNotifications(enabled: Boolean) {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isSyncing = true, error = null)
+            
+            repository.updateDailyQuoteNotifications(enabled)
+                .onSuccess {
+                    _state.value = _state.value.copy(isSyncing = false)
+                    val message = if (enabled) {
+                        "Daily quote notifications enabled"
+                    } else {
+                        "Daily quote notifications disabled"
+                    }
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                }
+                .onFailure { error ->
+                    _state.value = _state.value.copy(
+                        isSyncing = false,
+                        error = error.message ?: "Failed to update notifications"
+                    )
+                }
+        }
+    }
+    
+    private fun updateNotificationTime(hour: Int, minute: Int) {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isSyncing = true, error = null)
+            
+            repository.updateNotificationTime(hour, minute)
+                .onSuccess {
+                    _state.value = _state.value.copy(isSyncing = false)
+                    Toast.makeText(context, "Notification time updated", Toast.LENGTH_SHORT).show()
+                }
+                .onFailure { error ->
+                    _state.value = _state.value.copy(
+                        isSyncing = false,
+                        error = error.message ?: "Failed to update notification time"
                     )
                 }
         }

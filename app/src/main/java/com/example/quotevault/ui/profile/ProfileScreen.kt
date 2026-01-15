@@ -30,6 +30,7 @@ import com.example.quotevault.R
 fun ProfileScreen(
     onNavigateToPersonalization: () -> Unit = {},
     onNavigateToAccountData: () -> Unit = {},
+    onNavigateToNotifications: () -> Unit = {},
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -116,7 +117,7 @@ fun ProfileScreen(
                 title = "Notifications",
                 description = "Daily quotes, updates, and more",
                 icon = Icons.Outlined.Notifications,
-                onClick = onNavigateToPersonalization
+                onClick = onNavigateToNotifications
             )
 
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
