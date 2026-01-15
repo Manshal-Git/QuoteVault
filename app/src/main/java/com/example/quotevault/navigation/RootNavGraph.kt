@@ -11,7 +11,7 @@ import com.example.quotevault.ui.home.MainScreen
 private const val EMAIL = "email"
 
 @Composable
-fun NavGraph(
+fun RootNavGraph(
     navController: NavHostController,
     startDestination: String = Screen.Auth.route
 ) {

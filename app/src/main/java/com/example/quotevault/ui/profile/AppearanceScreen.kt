@@ -23,7 +23,7 @@ import com.example.quotevault.ui.theme.ThemeOption
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PersonalizationScreen(
+fun AppearanceScreen(
     onNavigateBack: () -> Unit,
     viewModel: ProfileViewModel = hiltViewModel()
 ) {

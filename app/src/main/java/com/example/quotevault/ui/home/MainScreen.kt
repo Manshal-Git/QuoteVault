@@ -17,7 +17,7 @@ import com.example.quotevault.navigation.BottomNavItem
 import com.example.quotevault.navigation.bottomNavItems
 import com.example.quotevault.ui.favourites.FavouritesScreen
 import com.example.quotevault.ui.profile.AccountDataScreen
-import com.example.quotevault.ui.profile.PersonalizationScreen
+import com.example.quotevault.ui.profile.AppearanceScreen
 import com.example.quotevault.ui.profile.ProfileScreen
 import com.example.quotevault.ui.quotes.QuotesDiscoveryScreen
 
@@ -111,7 +111,7 @@ fun MainScreen() {
             }
             
             composable("personalization") {
-                PersonalizationScreen(
+                AppearanceScreen(
                     onNavigateBack = {
                         navController.popBackStack()
                     }

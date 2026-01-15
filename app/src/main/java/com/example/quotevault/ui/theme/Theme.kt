@@ -51,12 +51,19 @@ private val QuotesShapes = Shapes(
 @Composable
 fun QuoteVaultTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    themeOption: ThemeOption = ThemeOption.INDIGO,
     content: @Composable () -> Unit
 ) {
     val colorScheme = if (darkTheme) {
-        DarkColorScheme
+        DarkColorScheme.copy(
+            primary = themeOption.primaryDark,
+            secondary = themeOption.secondaryDark,
+        )
     } else {
-        LightColorScheme
+        LightColorScheme.copy(
+            primary = themeOption.primaryLight,
+            secondary = themeOption.secondaryLight,
+        )
     }
 
     MaterialTheme(
