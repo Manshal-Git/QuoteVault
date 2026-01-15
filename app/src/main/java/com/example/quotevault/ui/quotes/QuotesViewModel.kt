@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuotesViewModel @Inject constructor(
-    private val repository: FakeQuotesRepository,
+    private val repository: QuotesRepository,
     private val collectionsDataSource: CollectionsDataSource
 ) : ViewModel() {
 

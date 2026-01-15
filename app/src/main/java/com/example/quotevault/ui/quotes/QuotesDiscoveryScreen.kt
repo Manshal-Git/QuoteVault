@@ -5,22 +5,21 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.quotevault.ui.components.*
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,6 +31,23 @@ fun QuotesDiscoveryScreen(
     var quoteToShare by rememberSaveable { mutableStateOf<Quote?>(null) }
     var shareMessage by rememberSaveable { mutableStateOf<String?>(null) }
     var showQuoteOfTheDay by rememberSaveable { mutableStateOf(true) }
+    
+    // Track scroll state for FAB expansion
+    val listState = rememberLazyListState()
+    var isFabExpanded by remember { mutableStateOf(true) }
+    
+    // Detect scrolling and collapse/expand FAB
+    LaunchedEffect(listState.isScrollInProgress) {
+        if (listState.isScrollInProgress) {
+            isFabExpanded = false
+        } else {
+            // Wait a bit after scroll stops before expanding
+            delay(150)
+            if (!listState.isScrollInProgress) {
+                isFabExpanded = true
+            }
+        }
+    }
     
     Box(modifier = modifier.fillMaxSize()) {
         // Main Content - Only show when Quote of the Day is dismissed
@@ -160,6 +176,7 @@ fun QuotesDiscoveryScreen(
                         
                         else -> {
                             LazyColumn(
+                                state = listState,
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .padding(horizontal = 16.dp),
@@ -215,7 +232,7 @@ fun QuotesDiscoveryScreen(
             }
         }
         
-        // FAB to show Quote of the Day again
+        // FAB to show Quote of the Day again - Collapses when scrolling
         if (!showQuoteOfTheDay && state.quoteOfTheDay != null) {
             FloatingActionButton(
                 onClick = { showQuoteOfTheDay = true },
@@ -225,19 +242,38 @@ fun QuotesDiscoveryScreen(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = "Quote of the Day"
-                    )
-                    Text(
-                        text = "Quote of the Day",
-                        style = MaterialTheme.typography.labelLarge
-                    )
+                AnimatedContent(
+                    targetState = isFabExpanded,
+                    transitionSpec = {
+                        fadeIn() + expandHorizontally() togetherWith 
+                        fadeOut() + shrinkHorizontally()
+                    },
+                    label = "FAB expansion"
+                ) { expanded ->
+                    if (expanded) {
+                        // Expanded state with icon and text
+                        Row(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = "Quote of the Day"
+                            )
+                            Text(
+                                text = "Quote of the Day",
+                                style = MaterialTheme.typography.labelLarge
+                            )
+                        }
+                    } else {
+                        // Collapsed state with icon only
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Quote of the Day",
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
                 }
             }
         }
