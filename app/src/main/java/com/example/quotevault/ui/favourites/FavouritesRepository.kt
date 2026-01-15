@@ -1,6 +1,7 @@
 package com.example.quotevault.ui.favourites
 
-import com.example.quotevault.data.FavouritesDataSource
+import com.example.quotevault.data.Collection
+import com.example.quotevault.data.CollectionsDataSource
 import com.example.quotevault.ui.quotes.Quote
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -10,7 +11,7 @@ import javax.inject.Singleton
 
 @Singleton
 class FavouritesRepository @Inject constructor(
-    private val favouritesDataSource: FavouritesDataSource
+    private val collectionsDataSource: CollectionsDataSource
 ) {
     
     // Sample quotes data - in real app, this would come from a database or API
@@ -141,7 +142,10 @@ class FavouritesRepository @Inject constructor(
      * Get all favorite quotes as a Flow that updates when favorites change
      */
     fun getFavoriteQuotesFlow(): Flow<List<Quote>> {
-        return favouritesDataSource.favoriteQuoteIds.map { favoriteIds ->
+        return collectionsDataSource.collections.map { collectionsMap ->
+            val favoriteCollection = collectionsMap[Collection.DEFAULT_COLLECTION_ID]
+            val favoriteIds = favoriteCollection?.quoteIds ?: emptySet()
+            
             allQuotes.filter { quote ->
                 favoriteIds.contains(quote.id)
             }.map { quote ->
@@ -157,7 +161,7 @@ class FavouritesRepository @Inject constructor(
         delay(500) // Simulate network delay
         
         return try {
-            val favoriteIds = favouritesDataSource.getAllFavorites()
+            val favoriteIds = collectionsDataSource.getFavoriteQuoteIds()
             val favorites = allQuotes.filter { quote ->
                 favoriteIds.contains(quote.id)
             }.map { quote ->
@@ -176,7 +180,7 @@ class FavouritesRepository @Inject constructor(
         delay(300) // Simulate network delay
         
         return try {
-            favouritesDataSource.removeFavorite(quoteId)
+            collectionsDataSource.removeQuoteFromCollection(quoteId, Collection.DEFAULT_COLLECTION_ID)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -190,7 +194,7 @@ class FavouritesRepository @Inject constructor(
         delay(300) // Simulate network delay
         
         return try {
-            favouritesDataSource.clearAllFavorites()
+            collectionsDataSource.clearCollection(Collection.DEFAULT_COLLECTION_ID)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

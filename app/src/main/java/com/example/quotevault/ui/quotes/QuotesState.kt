@@ -1,5 +1,7 @@
 package com.example.quotevault.ui.quotes
 
+import com.example.quotevault.data.Collection
+
 data class QuotesState(
     val quotes: List<Quote> = emptyList(),
     val filteredQuotes: List<Quote> = emptyList(),
@@ -8,7 +10,10 @@ data class QuotesState(
     val isRefreshing: Boolean = false,
     val searchQuery: String = "",
     val selectedCategory: String? = null,
-    val availableCategories: List<String> = emptyList()
+    val availableCategories: List<String> = emptyList(),
+    val showCollectionSheet: Boolean = false,
+    val selectedQuoteForCollection: String? = null,
+    val collections: List<Collection> = emptyList()
 )
 
 data class Quote(

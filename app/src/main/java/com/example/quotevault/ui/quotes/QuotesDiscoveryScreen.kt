@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.quotevault.ui.components.AddToCollectionBottomSheet
 import com.example.quotevault.ui.components.QuoteCard
 import com.example.quotevault.ui.components.QuotesSearchBar
 import com.example.quotevault.ui.components.ShareQuoteDialog
@@ -168,7 +169,7 @@ fun QuotesDiscoveryScreen(
                                     category = quote.category,
                                     isFavorite = quote.isFavorite,
                                     onFavoriteClick = {
-                                        viewModel.handleIntent(QuotesIntent.ToggleFavorite(quote.id))
+                                        viewModel.handleIntent(QuotesIntent.OpenCollectionSheet(quote.id))
                                     },
                                     onShareClick = {
                                         quoteToShare = quote
@@ -225,6 +226,32 @@ fun QuotesDiscoveryScreen(
             onDismiss = { quoteToShare = null },
             onShareComplete = { message ->
                 shareMessage = message
+            }
+        )
+    }
+    
+    // Collection Bottom Sheet
+    if (state.showCollectionSheet && state.selectedQuoteForCollection != null) {
+        val selectedQuoteId = state.selectedQuoteForCollection!!
+        val selectedCollectionIds = state.collections
+            .filter { it.quoteIds.contains(selectedQuoteId) }
+            .map { it.id }
+            .toSet()
+        
+        AddToCollectionBottomSheet(
+            quoteId = selectedQuoteId,
+            collections = state.collections,
+            selectedCollectionIds = selectedCollectionIds,
+            onCollectionToggle = { collectionId ->
+                viewModel.handleIntent(
+                    QuotesIntent.ToggleQuoteInCollection(selectedQuoteId, collectionId)
+                )
+            },
+            onCreateCollection = { name, description ->
+                viewModel.handleIntent(QuotesIntent.CreateCollection(name, description))
+            },
+            onDismiss = {
+                viewModel.handleIntent(QuotesIntent.CloseCollectionSheet)
             }
         )
     }

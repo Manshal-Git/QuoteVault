@@ -2,6 +2,7 @@ package com.example.quotevault.ui.quotes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.quotevault.data.CollectionsDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,7 +12,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuotesViewModel @Inject constructor(
-    private val repository: FakeQuotesRepository
+    private val repository: FakeQuotesRepository,
+    private val collectionsDataSource: CollectionsDataSource
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(QuotesState())
@@ -19,6 +21,20 @@ class QuotesViewModel @Inject constructor(
 
     init {
         handleIntent(QuotesIntent.LoadQuotes)
+        observeCollections()
+    }
+    
+    private fun observeCollections() {
+        viewModelScope.launch {
+            collectionsDataSource.collections.collect { collectionsMap ->
+                _state.value = _state.value.copy(
+                    collections = collectionsMap.values.sortedWith(
+                        compareByDescending<com.example.quotevault.data.Collection> { it.isDefault }
+                            .thenBy { it.name }
+                    )
+                )
+            }
+        }
     }
 
     fun handleIntent(intent: QuotesIntent) {
@@ -26,10 +42,61 @@ class QuotesViewModel @Inject constructor(
             is QuotesIntent.LoadQuotes -> loadQuotes()
             is QuotesIntent.RefreshQuotes -> refreshQuotes()
             is QuotesIntent.ToggleFavorite -> toggleFavorite(intent.quoteId)
+            is QuotesIntent.OpenCollectionSheet -> openCollectionSheet(intent.quoteId)
+            is QuotesIntent.ToggleQuoteInCollection -> toggleQuoteInCollection(intent.quoteId, intent.collectionId)
+            is QuotesIntent.CreateCollection -> createCollection(intent.name, intent.description)
             is QuotesIntent.ShareQuote -> shareQuote(intent.quote)
             is QuotesIntent.SearchQuotes -> searchQuotes(intent.query)
             is QuotesIntent.FilterByCategory -> filterByCategory(intent.category)
+            is QuotesIntent.CloseCollectionSheet -> closeCollectionSheet()
             is QuotesIntent.ClearError -> clearError()
+        }
+    }
+    
+    private fun openCollectionSheet(quoteId: String) {
+        _state.value = _state.value.copy(
+            showCollectionSheet = true,
+            selectedQuoteForCollection = quoteId
+        )
+    }
+    
+    private fun closeCollectionSheet() {
+        _state.value = _state.value.copy(
+            showCollectionSheet = false,
+            selectedQuoteForCollection = null
+        )
+    }
+    
+    private fun toggleQuoteInCollection(quoteId: String, collectionId: String) {
+        viewModelScope.launch {
+            collectionsDataSource.toggleQuoteInCollection(quoteId, collectionId)
+            // Update quote favorite status if it's the default collection
+            if (collectionId == com.example.quotevault.data.Collection.DEFAULT_COLLECTION_ID) {
+                val updatedQuotes = _state.value.quotes.map { quote ->
+                    if (quote.id == quoteId) {
+                        quote.copy(isFavorite = collectionsDataSource.isQuoteInCollection(quoteId, collectionId))
+                    } else {
+                        quote
+                    }
+                }
+                val updatedFilteredQuotes = _state.value.filteredQuotes.map { quote ->
+                    if (quote.id == quoteId) {
+                        quote.copy(isFavorite = collectionsDataSource.isQuoteInCollection(quoteId, collectionId))
+                    } else {
+                        quote
+                    }
+                }
+                _state.value = _state.value.copy(
+                    quotes = updatedQuotes,
+                    filteredQuotes = updatedFilteredQuotes
+                )
+            }
+        }
+    }
+    
+    private fun createCollection(name: String, description: String) {
+        viewModelScope.launch {
+            collectionsDataSource.createCollection(name, description)
         }
     }
 
@@ -87,6 +154,12 @@ class QuotesViewModel @Inject constructor(
 
     private fun toggleFavorite(quoteId: String) {
         viewModelScope.launch {
+            // Toggle in default favorites collection
+            collectionsDataSource.toggleQuoteInCollection(
+                quoteId, 
+                com.example.quotevault.data.Collection.DEFAULT_COLLECTION_ID
+            )
+            
             // Optimistically update UI
             val updatedQuotes = _state.value.quotes.map { quote ->
                 if (quote.id == quoteId) {

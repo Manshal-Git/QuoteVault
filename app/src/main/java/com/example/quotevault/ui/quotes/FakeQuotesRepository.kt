@@ -1,13 +1,14 @@
 package com.example.quotevault.ui.quotes
 
-import com.example.quotevault.data.FavouritesDataSource
+import com.example.quotevault.data.Collection
+import com.example.quotevault.data.CollectionsDataSource
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class FakeQuotesRepository @Inject constructor(
-    private val favouritesDataSource: FavouritesDataSource
+    private val collectionsDataSource: CollectionsDataSource
 ) {
     
     private val sampleQuotes = listOf(
@@ -138,7 +139,12 @@ class FakeQuotesRepository @Inject constructor(
         
         return try {
             val quotesWithFavorites = sampleQuotes.map { quote ->
-                quote.copy(isFavorite = favouritesDataSource.isFavorite(quote.id))
+                quote.copy(
+                    isFavorite = collectionsDataSource.isQuoteInCollection(
+                        quote.id, 
+                        Collection.DEFAULT_COLLECTION_ID
+                    )
+                )
             }
             Result.success(quotesWithFavorites.shuffled())
         } catch (e: Exception) {
@@ -150,7 +156,10 @@ class FakeQuotesRepository @Inject constructor(
         delay(300) // Simulate network delay
         
         return try {
-            val isFavorite = favouritesDataSource.toggleFavorite(quoteId)
+            val isFavorite = collectionsDataSource.toggleQuoteInCollection(
+                quoteId, 
+                Collection.DEFAULT_COLLECTION_ID
+            )
             Result.success(isFavorite)
         } catch (e: Exception) {
             Result.failure(e)
