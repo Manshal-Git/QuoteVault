@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val repository: FakeAuthRepository
+    private val repository: AuthRepository
 ) : ViewModel() {
     
     private val _state = MutableStateFlow(AuthState())
@@ -27,8 +27,6 @@ class AuthViewModel @Inject constructor(
             is AuthIntent.EmailChanged -> updateEmail(intent.email)
             is AuthIntent.PasswordChanged -> updatePassword(intent.password)
             is AuthIntent.CallToActionClicked -> onCallToActionClicked()
-            is AuthIntent.GoogleSignInClicked -> signInWithGoogle()
-            is AuthIntent.AppleSignInClicked -> signInWithApple()
             is AuthIntent.ForgotPasswordClicked -> forgotPassword()
             is AuthIntent.ClearError -> clearError()
             is AuthIntent.SignInOptionClicked -> setSignInMode(true)
@@ -107,46 +105,6 @@ class AuthViewModel @Inject constructor(
                     _state.value = _state.value.copy(
                         isLoading = false,
                         error = error.message ?: "Sign up failed"
-                    )
-                }
-        }
-    }
-    
-    private fun signInWithGoogle() {
-        viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true, error = null)
-            
-            repository.signInWithGoogle()
-                .onSuccess {
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        isSignedIn = true
-                    )
-                }
-                .onFailure { error ->
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        error = error.message ?: "Google sign in failed"
-                    )
-                }
-        }
-    }
-    
-    private fun signInWithApple() {
-        viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true, error = null)
-            
-            repository.signInWithApple()
-                .onSuccess {
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        isSignedIn = true
-                    )
-                }
-                .onFailure { error ->
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        error = error.message ?: "Apple sign in failed"
                     )
                 }
         }

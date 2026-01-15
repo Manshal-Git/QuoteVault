@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PasswordResetViewModel @Inject constructor(
-    private val repository: FakeAuthRepository
+    private val repository: AuthRepository
 ) : ViewModel() {
     
     private val _state = MutableStateFlow(PasswordResetState())

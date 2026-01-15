@@ -2,7 +2,7 @@ package com.example.quotevault.ui.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.quotevault.ui.auth.FakeAuthRepository
+import com.example.quotevault.ui.auth.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AccountDataViewModel @Inject constructor(
-    private val authRepository: FakeAuthRepository
+    private val authRepository: AuthRepository
 ) : ViewModel() {
     
     private val _state = MutableStateFlow(AccountDataState())

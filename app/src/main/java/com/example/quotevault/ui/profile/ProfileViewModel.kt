@@ -4,7 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.quotevault.ui.auth.FakeAuthRepository
+import com.example.quotevault.ui.auth.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val repository: ProfileRepository,
-    private val authRepository: FakeAuthRepository,
+    private val authRepository: AuthRepository,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 

@@ -6,8 +6,6 @@ sealed class AuthIntent {
     object CallToActionClicked : AuthIntent()
     object SignInOptionClicked : AuthIntent()
     object SignUpOptionClicked : AuthIntent()
-    object GoogleSignInClicked : AuthIntent()
-    object AppleSignInClicked : AuthIntent()
     object ForgotPasswordClicked : AuthIntent()
     object ClearError : AuthIntent()
 }
