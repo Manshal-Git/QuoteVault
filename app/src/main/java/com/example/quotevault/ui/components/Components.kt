@@ -20,9 +20,11 @@ import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.example.quotevault.R
 import com.example.quotevault.ui.theme.Dimensions
 import com.example.quotevault.ui.theme.Error
 import com.example.quotevault.ui.theme.QuoteVaultTheme
@@ -265,7 +267,7 @@ fun QuotesSearchBar(
             .clip(RoundedCornerShape(Dimensions.radiusMD)),
         placeholder = {
             Text(
-                text = "Search quotes...",
+                text = stringResource(R.string.search_quotes_placeholder),
                 style = MaterialTheme.typography.bodyLarge
             )
         },

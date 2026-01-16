@@ -16,7 +16,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.quotevault.R
 import com.example.quotevault.data.Collection
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,7 +52,7 @@ fun AddToCollectionBottomSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Save to Collection",
+                    text = stringResource(R.string.save_to_collection),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -75,7 +77,7 @@ fun AddToCollectionBottomSheet(
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Create New Collection")
+                Text(stringResource(R.string.create_new_collection))
             }
             
             HorizontalDivider()
@@ -89,7 +91,7 @@ fun AddToCollectionBottomSheet(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "No collections yet",
+                        text = stringResource(R.string.no_collections_yet),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -173,7 +175,7 @@ private fun CollectionItem(
                             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                         ) {
                             Text(
-                                text = "DEFAULT",
+                                text = stringResource(R.string.default_collection_badge),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
@@ -235,7 +237,7 @@ private fun CreateCollectionDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "Create Collection",
+                text = stringResource(R.string.create_collection),
                 style = MaterialTheme.typography.headlineSmall
             )
         },
@@ -246,8 +248,8 @@ private fun CreateCollectionDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Collection Name") },
-                    placeholder = { Text("e.g., Inspirational") },
+                    label = { Text(stringResource(R.string.collection_name)) },
+                    placeholder = { Text(stringResource(R.string.collection_name_placeholder)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -255,8 +257,8 @@ private fun CreateCollectionDialog(
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Description (Optional)") },
-                    placeholder = { Text("What's this collection about?") },
+                    label = { Text(stringResource(R.string.collection_description)) },
+                    placeholder = { Text(stringResource(R.string.collection_description_placeholder)) },
                     maxLines = 3,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -267,12 +269,12 @@ private fun CreateCollectionDialog(
                 onClick = { onCreate(name, description) },
                 enabled = name.isNotBlank()
             ) {
-                Text("Create")
+                Text(stringResource(R.string.create))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         }
     )

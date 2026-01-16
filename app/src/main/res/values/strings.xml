@@ -1,6 +1,130 @@
 <resources>
     <string name="app_name">QuoteVault</string>
+    
+    <!-- Common -->
+    <string name="dismiss">Dismiss</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="save">Save</string>
+    <string name="share">Share</string>
+    <string name="change">Change</string>
+    <string name="create">Create</string>
+    <string name="syncing">Syncing…</string>
+    
+    <!-- Profile Screen -->
+    <string name="profile">Profile</string>
+    <string name="settings">Settings</string>
+    <string name="sign_out">Sign Out</string>
     <string name="heading_appearance">Appearance</string>
     <string name="description_appearance">Theme, font size, and appearance</string>
+    <string name="heading_notifications">Notifications</string>
+    <string name="description_notifications">Daily quotes, updates, and more</string>
     <string name="heading_account_and_data">Account and Data</string>
+    <string name="description_account_and_data">Manage your account and data settings</string>
+    
+    <!-- Notification Preferences Screen -->
+    <string name="notifications_subtitle">Stay inspired with daily quote notifications</string>
+    <string name="daily_quote">Daily Quote</string>
+    <string name="daily_quote_description">Receive an inspiring quote every day</string>
+    <string name="notification_time">Notification Time</string>
+    <string name="notification_info">💡 You\'ll receive a notification with a new inspiring quote at your chosen time every day.</string>
+    <string name="more_notification_options">More Notification Options</string>
+    <string name="more_notification_options_description">Additional notification preferences like new collections, quote of the week, and more coming soon!</string>
+    <string name="select_time">Select Time</string>
+    
+    <!-- Appearance Screen -->
+    <string name="appearance_subtitle">Customize your Quote Vault experience</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="quote_font_size">Quote Font Size</string>
+    <string name="font_size_small">Small</string>
+    <string name="font_size_medium">Medium</string>
+    <string name="font_size_large">Large</string>
+    <string name="font_size_preview">\"The only way to do great work is to love what you do.\"</string>
+    <string name="theme_color">Theme Color</string>
+    
+    <!-- Account Data Screen -->
+    <string name="account_data_subtitle">Manage your account information and data</string>
+    <string name="email_address">Email Address</string>
+    <string name="change_password">Change Password</string>
+    <string name="change_password_description">Update your account password</string>
+    <string name="current_password">Current Password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_new_password">Confirm New Password</string>
+    <string name="update_password">Update Password</string>
+    <string name="password_requirements">Password must be at least 8 characters</string>
+    <string name="password_changed_success">Password changed successfully</string>
+    <string name="passwords_dont_match">Passwords don\'t match</string>
+    <string name="danger_zone">Danger Zone</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="delete_account_description">Permanently delete your account and all data</string>
+    <string name="delete_account_warning">⚠️ This action cannot be undone. All your quotes, collections, and preferences will be permanently deleted.</string>
+    
+    <!-- Favourites Screen -->
+    <string name="favourites">Favourites</string>
+    <string name="no_favorites_yet">No Favorites Yet</string>
+    <string name="no_favorites_description">Start adding quotes to your favorites by tapping the heart icon</string>
+    <string name="quote_count_singular">Quote</string>
+    <string name="quote_count_plural">Quotes</string>
+    <string name="clear_all_favorites_title">Clear All Favorites?</string>
+    <string name="clear_all_favorites_message">This will remove all %d quotes from your favorites. This action cannot be undone.</string>
+    <string name="clear_all">Clear All</string>
+    <string name="clear_all_favorites_description">Clear all favorites</string>
+    
+    <!-- Quotes Discovery Screen -->
+    <string name="search_quotes_placeholder">Search quotes…</string>
+    <string name="all_categories">All</string>
+    <string name="no_quotes_found">No quotes found</string>
+    <string name="no_quotes_available">No quotes available</string>
+    <string name="adjust_search_filters">Try adjusting your search or filters</string>
+    <string name="quote_of_the_day">Quote of the Day</string>
+    <string name="quote_of_the_day_emoji">✨ Quote of the Day</string>
+    <string name="continue_to_quotes">Continue to Quotes</string>
+    
+    <!-- Collections -->
+    <string name="save_to_collection">Save to Collection</string>
+    <string name="create_new_collection">Create New Collection</string>
+    <string name="no_collections_yet">No collections yet</string>
+    <string name="create_collection">Create Collection</string>
+    <string name="collection_name">Collection Name</string>
+    <string name="collection_name_placeholder">e.g., Inspirational</string>
+    <string name="collection_description">Description (Optional)</string>
+    <string name="collection_description_placeholder">What\'s this collection about?</string>
+    <string name="default_collection_badge">DEFAULT</string>
+    <string name="quotes_count">%d quotes</string>
+    
+    <!-- Share Dialog -->
+    <string name="share_quote">Share Quote</string>
+    <string name="author_attribution">— %s</string>
+    <string name="choose_card_style">Choose card style:</string>
+    <string name="choose_share_method">Choose how to share:</string>
+    <string name="share_as_text">Share as Text</string>
+    <string name="share_as_image">Share as Image</string>
+    <string name="save_to_gallery">Save to Gallery</string>
+    <string name="share_text_format">\"%s\"\n\n— %s\n\n#QuoteVault</string>
+    
+    <!-- Auth Screen -->
+    <string name="welcome_to_quotevault">Welcome to QuoteVault</string>
+    <string name="discover_save_share">Discover, save, and share inspiring quotes</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+    <string name="already_have_account">Already have an account?</string>
+    <string name="full_name">Full Name</string>
+    <string name="confirm_password">Confirm Password</string>
+    
+    <!-- Password Reset Screen -->
+    <string name="reset_password">Reset Password</string>
+    <string name="reset_password_subtitle">Enter your email address and we\'ll send you instructions to reset your password</string>
+    <string name="send_reset_link">Send Reset Link</string>
+    <string name="back_to_sign_in">Back to Sign In</string>
+    <string name="reset_link_sent">Reset link sent! Check your email.</string>
+    <string name="invalid_email">Please enter a valid email address</string>
+    
+    <!-- Error Messages -->
+    <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="error_network">Network error. Please check your connection.</string>
+    <string name="error_auth">Authentication failed. Please try again.</string>
 </resources>

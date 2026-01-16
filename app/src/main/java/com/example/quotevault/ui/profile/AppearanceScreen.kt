@@ -259,7 +259,7 @@ private fun ThemeColorSelection(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                ThemeOption.values().forEach { theme ->
+                ThemeOption.entries.forEach { theme ->
                     ThemeColorOption(
                         theme = theme,
                         isSelected = selectedTheme == theme.name,

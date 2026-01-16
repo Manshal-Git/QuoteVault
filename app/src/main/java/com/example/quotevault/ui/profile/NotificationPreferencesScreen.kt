@@ -13,9 +13,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.quotevault.R
 import com.example.quotevault.ui.components.Toolbar
 import java.util.Calendar
 
@@ -41,7 +43,7 @@ fun NotificationPreferencesScreen(
             )
     ) {
         Column {
-            Toolbar("Notifications") {
+            Toolbar(stringResource(R.string.heading_notifications)) {
                 onNavigateBack()
             }
             Column(
@@ -52,7 +54,7 @@ fun NotificationPreferencesScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = "Stay inspired with daily quote notifications",
+                    text = stringResource(R.string.notifications_subtitle),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -77,16 +79,16 @@ fun NotificationPreferencesScreen(
                                 verticalArrangement = Arrangement.spacedBy(4.dp)
                             ) {
                                 Text(
-                                    text = "Daily Quote",
+                                    text = stringResource(R.string.daily_quote),
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
 
                                 Text(
                                     text = if (state.isSyncing)
-                                        "Syncing..."
+                                        stringResource(R.string.syncing)
                                     else
-                                        "Receive an inspiring quote every day",
+                                        stringResource(R.string.daily_quote_description),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -131,7 +133,7 @@ fun NotificationPreferencesScreen(
                                         verticalArrangement = Arrangement.spacedBy(4.dp)
                                     ) {
                                         Text(
-                                            text = "Notification Time",
+                                            text = stringResource(R.string.notification_time),
                                             style = MaterialTheme.typography.titleSmall,
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
@@ -151,7 +153,7 @@ fun NotificationPreferencesScreen(
                                     onClick = { showTimePicker = true },
                                     enabled = !state.isSyncing
                                 ) {
-                                    Text("Change")
+                                    Text(stringResource(R.string.change))
                                 }
                             }
 
@@ -162,7 +164,7 @@ fun NotificationPreferencesScreen(
                                 color = MaterialTheme.colorScheme.secondaryContainer
                             ) {
                                 Text(
-                                    text = "💡 You'll receive a notification with a new inspiring quote at your chosen time every day.",
+                                    text = stringResource(R.string.notification_info),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                                     modifier = Modifier.padding(12.dp)
@@ -186,13 +188,13 @@ fun NotificationPreferencesScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Text(
-                            text = "More Notification Options",
+                            text = stringResource(R.string.more_notification_options),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
                         Text(
-                            text = "Additional notification preferences like new collections, quote of the week, and more coming soon!",
+                            text = stringResource(R.string.more_notification_options_description),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -209,7 +211,7 @@ fun NotificationPreferencesScreen(
                     .padding(16.dp),
                 action = {
                     TextButton(onClick = { viewModel.handleIntent(ProfileIntent.ClearError) }) {
-                        Text("Dismiss")
+                        Text(stringResource(R.string.dismiss))
                     }
                 }
             ) {
@@ -251,7 +253,7 @@ private fun TimePickerDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "Select Time",
+                text = stringResource(R.string.select_time),
                 style = MaterialTheme.typography.headlineSmall
             )
         },
@@ -267,12 +269,12 @@ private fun TimePickerDialog(
                     onConfirm(timePickerState.hour, timePickerState.minute)
                 }
             ) {
-                Text("OK")
+                Text(stringResource(R.string.ok))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         }
     )

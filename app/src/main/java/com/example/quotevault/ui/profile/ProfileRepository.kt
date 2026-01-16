@@ -82,7 +82,7 @@ class ProfileRepository @Inject constructor(
     
     private suspend fun syncToServer(key: String, value: String) {
         // Simulate network delay
-        delay(500)
+        delay(50)
         // In real implementation, this would call your API
         println("Syncing to server: $key = $value")
     }

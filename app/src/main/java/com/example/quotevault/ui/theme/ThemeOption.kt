@@ -12,7 +12,7 @@ enum class ThemeOption(
 ) {
     INDIGO(
         displayName = "Indigo",
-        description = "Classic purple-blue theme",
+        description = "Classic purple theme",
         primaryLight = Color(0xFF6366F1),
         primaryDark = Color(0xFF818CF8),
         secondaryLight = Color(0xFFF59E0B),

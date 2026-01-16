@@ -42,7 +42,7 @@ fun ProfileScreen(
     ) {
         // Header
         Text(
-            text = "Profile",
+            text = stringResource(R.string.profile),
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -72,7 +72,7 @@ fun ProfileScreen(
         
         // Settings Section
         Text(
-            text = "Settings",
+            text = stringResource(R.string.settings),
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -94,8 +94,8 @@ fun ProfileScreen(
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
             SettingsCard(
-                title = "Notifications",
-                description = "Daily quotes, updates, and more",
+                title = stringResource(R.string.heading_notifications),
+                description = stringResource(R.string.description_notifications),
                 icon = Icons.Outlined.Notifications,
                 onClick = onNavigateToNotifications
             )
@@ -104,7 +104,7 @@ fun ProfileScreen(
 
             SettingsCard(
                 title = stringResource(R.string.heading_account_and_data),
-                description = "Manage your account and data settings",
+                description = stringResource(R.string.description_account_and_data),
                 icon = Icons.Rounded.Person,
                 onClick = onNavigateToAccountData
             )
@@ -120,7 +120,7 @@ fun ProfileScreen(
                 contentColor = MaterialTheme.colorScheme.error
             )
         ) {
-            Text("Sign Out")
+            Text(stringResource(R.string.sign_out))
         }
         
         // Error Snackbar
@@ -129,7 +129,7 @@ fun ProfileScreen(
                 modifier = Modifier.padding(16.dp),
                 action = {
                     TextButton(onClick = { viewModel.handleIntent(ProfileIntent.ClearError) }) {
-                        Text("Dismiss")
+                        Text(stringResource(R.string.dismiss))
                     }
                 }
             ) {

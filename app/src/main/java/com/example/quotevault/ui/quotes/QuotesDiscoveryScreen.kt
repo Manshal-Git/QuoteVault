@@ -15,9 +15,11 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.quotevault.R
 import com.example.quotevault.ui.components.*
 import kotlinx.coroutines.delay
 
@@ -96,7 +98,7 @@ fun QuotesDiscoveryScreen(
                                     },
                                     label = {
                                         Text(
-                                            text = "All",
+                                            text = stringResource(R.string.all_categories),
                                             style = MaterialTheme.typography.labelLarge
                                         )
                                     },
@@ -155,9 +157,9 @@ fun QuotesDiscoveryScreen(
                                 ) {
                                     Text(
                                         text = if (state.searchQuery.isNotEmpty() || state.selectedCategory != null) {
-                                            "No quotes found"
+                                            stringResource(R.string.no_quotes_found)
                                         } else {
-                                            "No quotes available"
+                                            stringResource(R.string.no_quotes_available)
                                         },
                                         style = MaterialTheme.typography.bodyLarge,
                                         color = MaterialTheme.colorScheme.onBackground
@@ -165,7 +167,7 @@ fun QuotesDiscoveryScreen(
                                     
                                     if (state.searchQuery.isNotEmpty() || state.selectedCategory != null) {
                                         Text(
-                                            text = "Try adjusting your search or filters",
+                                            text = stringResource(R.string.adjust_search_filters),
                                             style = MaterialTheme.typography.bodyMedium,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
@@ -262,7 +264,7 @@ fun QuotesDiscoveryScreen(
                                 contentDescription = "Quote of the Day"
                             )
                             Text(
-                                text = "Quote of the Day",
+                                text = stringResource(R.string.quote_of_the_day),
                                 style = MaterialTheme.typography.labelLarge
                             )
                         }
@@ -286,7 +288,7 @@ fun QuotesDiscoveryScreen(
                     .padding(16.dp),
                 action = {
                     TextButton(onClick = { viewModel.handleIntent(QuotesIntent.ClearError) }) {
-                        Text("Dismiss")
+                        Text(stringResource(R.string.dismiss))
                     }
                 }
             ) {
@@ -303,7 +305,7 @@ fun QuotesDiscoveryScreen(
                         .padding(16.dp),
                     action = {
                         TextButton(onClick = { shareMessage = null }) {
-                            Text("Dismiss")
+                            Text(stringResource(R.string.dismiss))
                         }
                     }
                 ) {
@@ -387,7 +389,7 @@ private fun QuoteOfTheDayOverlay(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "✨ Quote of the Day",
+                        text = stringResource(R.string.quote_of_the_day_emoji),
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -420,7 +422,7 @@ private fun QuoteOfTheDayOverlay(
                         },
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Save")
+                        Text(stringResource(R.string.save))
                     }
                     
                     Button(
@@ -430,7 +432,7 @@ private fun QuoteOfTheDayOverlay(
                         },
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Share")
+                        Text(stringResource(R.string.share))
                     }
                 }
                 
@@ -439,7 +441,7 @@ private fun QuoteOfTheDayOverlay(
                     onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Continue to Quotes")
+                    Text(stringResource(R.string.continue_to_quotes))
                 }
             }
         }

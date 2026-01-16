@@ -14,9 +14,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.quotevault.R
 import com.example.quotevault.ui.components.QuoteCard
 import com.example.quotevault.ui.components.ShareQuoteDialog
 import com.example.quotevault.ui.quotes.Quote
@@ -44,14 +46,14 @@ fun FavouritesScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Favourites",
+                    text = stringResource(R.string.favourites),
                     style = MaterialTheme.typography.headlineLarge
                 )
                 if (state.favoriteQuotes.isNotEmpty()) {
                     IconButton(onClick = { showClearDialog = true }) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Clear all favorites"
+                            contentDescription = stringResource(R.string.clear_all_favorites_description)
                         )
                     }
                 }
@@ -78,7 +80,7 @@ fun FavouritesScreen(
                             verticalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = "No Favorites Yet",
+                                text = stringResource(R.string.no_favorites_yet),
                                 style = MaterialTheme.typography.headlineLarge,
                                 color = MaterialTheme.colorScheme.onBackground
                             )
@@ -86,7 +88,7 @@ fun FavouritesScreen(
                             Spacer(Modifier.height(16.dp))
 
                             Text(
-                                text = "Start adding quotes to your favorites by tapping the heart icon",
+                                text = stringResource(R.string.no_favorites_description),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -102,8 +104,14 @@ fun FavouritesScreen(
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             stickyHeader {
+                                val count = state.favoriteQuotes.size
+                                val quotesText = if (count == 1) 
+                                    stringResource(R.string.quote_count_singular)
+                                else 
+                                    stringResource(R.string.quote_count_plural)
+                                    
                                 Text(
-                                    text = "${state.favoriteQuotes.size} ${if (state.favoriteQuotes.size == 1) "Quote" else "Quotes"}",
+                                    text = "$count $quotesText",
                                     style = MaterialTheme.typography.bodyLarge,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier
@@ -147,7 +155,7 @@ fun FavouritesScreen(
                             .padding(16.dp),
                         action = {
                             TextButton(onClick = { viewModel.handleIntent(FavouritesIntent.ClearError) }) {
-                                Text("Dismiss")
+                                Text(stringResource(R.string.dismiss))
                             }
                         }
                     ) {
@@ -162,13 +170,13 @@ fun FavouritesScreen(
                 onDismissRequest = { showClearDialog = false },
                 title = {
                     Text(
-                        text = "Clear All Favorites?",
+                        text = stringResource(R.string.clear_all_favorites_title),
                         style = MaterialTheme.typography.headlineLarge
                     )
                 },
                 text = {
                     Text(
-                        text = "This will remove all ${state.favoriteQuotes.size} quotes from your favorites. This action cannot be undone.",
+                        text = stringResource(R.string.clear_all_favorites_message, state.favoriteQuotes.size),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 },
@@ -180,14 +188,14 @@ fun FavouritesScreen(
                         }
                     ) {
                         Text(
-                            text = "Clear All",
+                            text = stringResource(R.string.clear_all),
                             color = MaterialTheme.colorScheme.error
                         )
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { showClearDialog = false }) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.cancel))
                     }
                 }
             )
@@ -212,7 +220,7 @@ fun FavouritesScreen(
                     .padding(16.dp),
                 action = {
                     TextButton(onClick = { shareMessage = null }) {
-                        Text("Dismiss")
+                        Text(stringResource(R.string.dismiss))
                     }
                 }
             ) {
