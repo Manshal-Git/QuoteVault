@@ -4,6 +4,7 @@
     <style name="Theme.QuoteVault" parent="android:Theme.Material.Light.NoActionBar" />
     
     <style name="Theme.QuoteVault.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
         <item name="windowSplashScreenAnimationDuration">500</item>
         <item name="postSplashScreenTheme">@style/Theme.QuoteVault</item>
