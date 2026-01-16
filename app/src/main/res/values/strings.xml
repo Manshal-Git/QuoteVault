@@ -35,12 +35,15 @@
     <!-- Appearance Screen -->
     <string name="appearance_subtitle">Customize your Quote Vault experience</string>
     <string name="dark_mode">Dark Mode</string>
+    <string name="dark_mode_description">Toggle dark/light theme</string>
     <string name="quote_font_size">Quote Font Size</string>
+    <string name="font_size_description">Adjust text size for quotes</string>
     <string name="font_size_small">Small</string>
     <string name="font_size_medium">Medium</string>
     <string name="font_size_large">Large</string>
     <string name="font_size_preview">\"The only way to do great work is to love what you do.\"</string>
     <string name="theme_color">Theme Color</string>
+    <string name="theme_color_description">Choose your preferred color scheme</string>
     
     <!-- Account Data Screen -->
     <string name="account_data_subtitle">Manage your account information and data</string>

@@ -2,7 +2,6 @@ package com.example.quotevault.ui.profile
 
 import com.example.quotevault.data.UserPreferences
 import com.example.quotevault.data.UserPreferencesDataStore
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -82,7 +81,6 @@ class ProfileRepository @Inject constructor(
     
     private suspend fun syncToServer(key: String, value: String) {
         // Simulate network delay
-        delay(50)
         // In real implementation, this would call your API
         println("Syncing to server: $key = $value")
     }

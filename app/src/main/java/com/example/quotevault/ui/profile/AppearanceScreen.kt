@@ -42,7 +42,7 @@ fun AppearanceScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "Customize your Quote Vault experience",
+                text = stringResource(R.string.appearance_subtitle),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -50,22 +50,19 @@ fun AppearanceScreen(
             // Dark Mode Toggle
             DarkModeToggle(
                 isDarkMode = state.userPreferences.isDarkMode,
-                onToggle = { viewModel.handleIntent(ProfileIntent.UpdateDarkMode(it)) },
-                isSyncing = state.isSyncing
+                onToggle = { viewModel.handleIntent(ProfileIntent.UpdateDarkMode(it)) }
             )
 
             // Font Size Adjustment
             FontSizeAdjustment(
                 fontSize = state.userPreferences.fontSize,
-                onFontSizeChange = { viewModel.handleIntent(ProfileIntent.UpdateFontSize(it)) },
-                isSyncing = state.isSyncing
+                onFontSizeChange = { viewModel.handleIntent(ProfileIntent.UpdateFontSize(it)) }
             )
 
             // Theme Color Selection
             ThemeColorSelection(
                 selectedTheme = state.userPreferences.themeOption,
-                onThemeSelect = { viewModel.handleIntent(ProfileIntent.UpdateThemeOption(it)) },
-                isSyncing = state.isSyncing
+                onThemeSelect = { viewModel.handleIntent(ProfileIntent.UpdateThemeOption(it)) }
             )
 
             // Error Snackbar
@@ -74,7 +71,7 @@ fun AppearanceScreen(
                     modifier = Modifier.padding(16.dp),
                     action = {
                         TextButton(onClick = { viewModel.handleIntent(ProfileIntent.ClearError) }) {
-                            Text("Dismiss")
+                            Text(stringResource(R.string.dismiss))
                         }
                     }
                 ) {
@@ -88,8 +85,7 @@ fun AppearanceScreen(
 @Composable
 private fun DarkModeToggle(
     isDarkMode: Boolean,
-    onToggle: (Boolean) -> Unit,
-    isSyncing: Boolean
+    onToggle: (Boolean) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth()
@@ -105,13 +101,13 @@ private fun DarkModeToggle(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = "Dark Mode",
+                    text = stringResource(R.string.dark_mode),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Text(
-                    text = if (isSyncing) "Syncing..." else "Toggle dark/light theme",
+                    text = "Toggle dark/light theme",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -119,8 +115,7 @@ private fun DarkModeToggle(
 
             Switch(
                 checked = isDarkMode,
-                onCheckedChange = onToggle,
-                enabled = !isSyncing
+                onCheckedChange = onToggle
             )
         }
     }
@@ -129,8 +124,7 @@ private fun DarkModeToggle(
 @Composable
 private fun FontSizeAdjustment(
     fontSize: Float,
-    onFontSizeChange: (Float) -> Unit,
-    isSyncing: Boolean
+    onFontSizeChange: (Float) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth()
@@ -150,13 +144,13 @@ private fun FontSizeAdjustment(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
-                        text = "Quote Font Size",
+                        text = stringResource(R.string.quote_font_size),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
 
                     Text(
-                        text = if (isSyncing) "Syncing..." else "Adjust text size for quotes",
+                        text = "Adjust text size for quotes",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -164,9 +158,9 @@ private fun FontSizeAdjustment(
 
                 Text(
                     text = when {
-                        fontSize < 0.9f -> "Small"
-                        fontSize > 1.1f -> "Large"
-                        else -> "Medium"
+                        fontSize < 0.9f -> stringResource(R.string.font_size_small)
+                        fontSize > 1.1f -> stringResource(R.string.font_size_large)
+                        else -> stringResource(R.string.font_size_medium)
                     },
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary
@@ -181,13 +175,12 @@ private fun FontSizeAdjustment(
                     value = fontSize,
                     onValueChange = onFontSizeChange,
                     valueRange = 0.8f..1.4f,
-                    steps = 5,
-                    enabled = !isSyncing
+                    steps = 5
                 )
 
                 // Preview Text
                 Text(
-                    text = "\"The only way to do great work is to love what you do.\"",
+                    text = stringResource(R.string.font_size_preview),
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontSize = MaterialTheme.typography.bodyLarge.fontSize * fontSize
                     ),
@@ -201,19 +194,19 @@ private fun FontSizeAdjustment(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Small",
+                        text = stringResource(R.string.font_size_small),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
                     Text(
-                        text = "Medium",
+                        text = stringResource(R.string.font_size_medium),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
                     Text(
-                        text = "Large",
+                        text = stringResource(R.string.font_size_large),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -226,8 +219,7 @@ private fun FontSizeAdjustment(
 @Composable
 private fun ThemeColorSelection(
     selectedTheme: String,
-    onThemeSelect: (String) -> Unit,
-    isSyncing: Boolean
+    onThemeSelect: (String) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth()
@@ -242,13 +234,13 @@ private fun ThemeColorSelection(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = "Theme Color",
+                    text = stringResource(R.string.theme_color),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Text(
-                    text = if (isSyncing) "Syncing..." else "Choose your preferred color scheme",
+                    text = "Choose your preferred color scheme",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -264,7 +256,6 @@ private fun ThemeColorSelection(
                         theme = theme,
                         isSelected = selectedTheme == theme.name,
                         onClick = { onThemeSelect(theme.name) },
-                        enabled = !isSyncing,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -278,7 +269,6 @@ private fun ThemeColorOption(
     theme: ThemeOption,
     isSelected: Boolean,
     onClick: () -> Unit,
-    enabled: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -288,7 +278,7 @@ private fun ThemeColorOption(
                 if (isSelected) MaterialTheme.colorScheme.primaryContainer
                 else MaterialTheme.colorScheme.surfaceVariant
             )
-            .clickable(enabled = enabled, onClick = onClick)
+            .clickable(onClick = onClick)
             .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
