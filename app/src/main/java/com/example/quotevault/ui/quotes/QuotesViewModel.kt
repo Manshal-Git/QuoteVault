@@ -20,6 +20,9 @@ class QuotesViewModel @Inject constructor(
     val state: StateFlow<QuotesState> = _state.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            collectionsDataSource.loadCollections()
+        }
         handleIntent(QuotesIntent.LoadQuotes)
         handleIntent(QuotesIntent.LoadQuoteOfTheDay)
         observeCollections()

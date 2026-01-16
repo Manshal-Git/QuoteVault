@@ -2,6 +2,7 @@ package com.example.quotevault.ui.favourites
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.quotevault.data.CollectionsDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,13 +12,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FavouritesViewModel @Inject constructor(
-    private val repository: FavouritesRepository
+    private val repository: FavouritesRepository,
+    private val collectionsDataSource: CollectionsDataSource
 ) : ViewModel() {
     
     private val _state = MutableStateFlow(FavouritesState())
     val state: StateFlow<FavouritesState> = _state.asStateFlow()
     
     init {
+        viewModelScope.launch {
+            collectionsDataSource.loadCollections()
+        }
         handleIntent(FavouritesIntent.LoadFavorites)
         observeFavorites()
     }

@@ -72,6 +72,7 @@ class QuotesRepository @Inject constructor(
             val quote = quoteDto.toQuote(isFavorite)
             Result.success(quote)
         } catch (e: Exception) {
+            Log.e(TAG, "Error getting quote of the day", e)
             Result.failure(e)
         }
     }
@@ -90,6 +91,7 @@ class QuotesRepository @Inject constructor(
             
             Result.success(quotesWithFavorites.shuffled())
         } catch (e: Exception) {
+            Log.e(TAG, "Error getting quotes", e)
             Result.failure(e)
         }
     }
@@ -102,6 +104,7 @@ class QuotesRepository @Inject constructor(
             )
             Result.success(isFavorite)
         } catch (e: Exception) {
+            Log.e(TAG, "Error toggling favorite for quote $quoteId", e)
             Result.failure(e)
         }
     }
