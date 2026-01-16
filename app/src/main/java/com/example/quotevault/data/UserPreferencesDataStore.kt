@@ -82,7 +82,7 @@ class UserPreferencesDataStore @Inject constructor(
 data class UserPreferences(
     val isDarkMode: Boolean = false,
     val fontSize: Float = 1.0f,
-    val userName: String = "Guest User",
+    val userName: String = "Quote Geek",
     val userAvatarUrl: String = "",
     val themeOption: String = "INDIGO",
     val dailyQuoteNotificationsEnabled: Boolean = false,
