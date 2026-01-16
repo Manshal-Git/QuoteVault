@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var supabase: SupabaseClient
     
-    private var isAuthCheckComplete = false
+    private var isAuthCheckComplete by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
