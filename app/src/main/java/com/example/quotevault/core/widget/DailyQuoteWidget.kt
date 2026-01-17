@@ -19,19 +19,55 @@ import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import com.example.quotevault.MainActivity
 import com.example.quotevault.R
+import com.example.quotevault.core.auth.SupabaseClient
+import com.example.quotevault.ui.quotes.Quote
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 
-class QuoteWidget : GlanceAppWidget() {
+class DailyQuoteWidget : GlanceAppWidget() {
+    
     override suspend fun provideGlance(context: Context, id: GlanceId) {
+        // Get the daily quote data
+        val quote = getQuoteOfTheDay(context)
+        
         provideContent {
             GlanceTheme {
                 QuoteOfTheDayWidget(
-                    quote = "The only way to do great work is to love what you do.",
-                    author = "Steve Jobs",
-                    category = "MOTIVATION"
+                    quote = quote.text,
+                    author = quote.author,
+                    category = quote.category.uppercase()
                 )
             }
         }
     }
+    
+    private suspend fun getQuoteOfTheDay(context: Context): Quote {
+        return try {
+            // Access Hilt dependencies through EntryPoint
+            val entryPoint = EntryPointAccessors.fromApplication(
+                context.applicationContext,
+                WidgetEntryPoint::class.java
+            )
+            val dataSource = WidgetDataSource(entryPoint.supabaseClient())
+            dataSource.getQuoteOfTheDay()
+        } catch (e: Exception) {
+            // Fallback quote if everything fails
+            Quote(
+                id = "fallback",
+                text = context.getString(R.string.widget_fallback_quote),
+                author = context.getString(R.string.widget_fallback_author),
+                category = "Motivation"
+            )
+        }
+    }
+}
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface WidgetEntryPoint {
+    fun supabaseClient(): SupabaseClient
 }
 
 @Composable

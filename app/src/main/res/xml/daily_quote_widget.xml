@@ -6,4 +6,6 @@
     android:updatePeriodMillis="86400000"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
+    android:description="@string/widget_description"
+    android:previewImage="@mipmap/ic_launcher"
     />

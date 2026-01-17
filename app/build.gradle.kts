@@ -71,6 +71,8 @@ dependencies {
 
     implementation(libs.androidx.glance)
     implementation(libs.androidx.glance.appwidget)
+    
+    implementation(libs.androidx.work.runtime.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

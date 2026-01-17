@@ -111,7 +111,7 @@
     <string name="share_as_text">Share as Text</string>
     <string name="share_as_image">Share as Image</string>
     <string name="save_to_gallery">Save to Gallery</string>
-    <string name="share_text_format">\"%s\"\n\n— %s\n\n#QuoteVault</string>
+    <string name="share_text_format" formatted="false">\"%s\"\n\n— %s\n\n#QuoteVault</string>
     
     <!-- Auth Screen -->
     <string name="welcome_to_quotevault">Welcome to QuoteVault</string>
@@ -167,4 +167,11 @@
     <string name="error_generic">Something went wrong. Please try again.</string>
     <string name="error_network">Network error. Please check your connection.</string>
     <string name="error_auth">Authentication failed. Please try again.</string>
+    
+    <!-- Widget -->
+    <string name="widget_name">Daily Quote</string>
+    <string name="widget_description">Get inspired with a daily quote</string>
+    <string name="widget_fallback_quote">The only way to do great work is to love what you do.</string>
+    <string name="widget_fallback_author">Steve Jobs</string>
+    <string name="widget_error_loading">Unable to load quote</string>
 </resources>
