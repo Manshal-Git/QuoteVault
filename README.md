@@ -45,28 +45,9 @@ git clone https://github.com/Manshal-Git/QuoteVault.git
 cd QuoteVault
 ```
 
-### 2. Android Studio Setup
+### 2. Build the Project Using Android Studio
 
-1. Open Android Studio
-2. Select "Open an existing project"
-3. Navigate to the cloned QuoteVault directory
-4. Click "OK" to open the project
-
-### 3. SDK and Dependencies
-
-Android Studio should automatically:
-- Download required SDK versions
-- Install necessary build tools
-- Sync Gradle dependencies
-
-If not automatic, you can manually:
-- Go to **Tools > SDK Manager**
-- Ensure Android API 26+ is installed
-- Sync project with Gradle files
-
-### 4. Build the Project
-
-#### Command Line
+#### Command Line (Option 1)
 
 ```bash
 # Clean build
@@ -79,7 +60,7 @@ If not automatic, you can manually:
 ./gradlew installDebug
 ```
 
-#### Android Studio
+#### Android Studio (Option 2)
 For Windows press `Shift` + `F10`
 
 For MacOS press `Command` + `R`
@@ -118,27 +99,58 @@ The app follows Clean Architecture principles with:
 - **Repository Pattern**: Data layer abstraction
 - **Single Activity**: One activity with Compose navigation
 
-## Features in Detail
+## AI approach and workflow
 
-### Daily Quote Widget
-- Home screen widget displaying daily inspirational quotes
-- Automatic updates with new quotes
-- Tap to open the main app
+Divide and Conquer was my approach.
 
-### Quote of the Day Overlay
-- Featured daily quote with prominent display
-- Date information for context
-- Save to collections or share functionality
+I leveraged multiple free options to complete small and independant tasks simultaneously.
 
-### Collections System
-- Create custom collections to organize quotes
-- Add/remove quotes from multiple collections
-- Default favorites collection
+I used AI to plan, design core UI, scaffold ViewModels, generate SQL schemas, refactor Compose UI, and debug Supabase.
 
-### Theme Support
-- Multiple color themes (Indigo, Emerald, Rose)
-- Dark/Light mode support
-- Customizable font sizes
+
+## AI tools used
+- ChatGPT ([Development Planning](https://chatgpt.com/s/t_696bb74dbc088191a7fc2a9172629de5))
+- Gemini ([Seed data](https://gemini.google.com/share/0e918ebd822b))
+- Claude ([Project setup + core UI and theming](https://claude.ai/share/dbc97ad4-f0f7-48d7-b179-bd7359c76b26))
+- Kiro Agentic IDE (AI driven development)
+
+## Design prototyping
+[Stitch](https://stitch.withgoogle.com/projects/5889418937889202092) with
+[Figma](https://www.figma.com/design/YNXthm7swVzVi6nlZ8HtPc/QuoteVault?node-id=0-1&t=MeGGjvv6SU5Zon5b-1)
+
+
+
+## Incomplete feature status
+
+- ✅ Home feed displaying quotes
+- ✅ Browse quotes by category (minimum 5: Motivation, Love, Success, Wisdom, Humor)
+- ✅ Search quotes by keyword
+- ✅ Search/filter by author
+- ✅ Pull-to-refresh functionality
+- ✅ Loading states and empty states handled gracefully
+- ❌ Pagination
+
+###  Quote of the Day
+- ✅ Displays a featured daily quote prominently on the home screen
+- ✅ Shows current date for daily context
+- ✅ Allows sharing and saving the daily quote to collections
+- ✅ Home screen widget displays the current quote of the day
+- ❌ Daily push notification delivery
+
+### Collections
+- ✅ Create custom collections to organize saved quotes
+- ✅ Add and remove quotes from collections
+- ✅ Default **Favorites** collection available
+- ❌ Dedicated quote listing screen for viewing quotes within a specific collection
+
+
+
+###  Theme & Personalization
+- ✅ Multiple color themes supported (Indigo, Emerald, Rose)
+- ✅ Light and Dark mode support
+- ✅ Adjustable font sizes for improved readability
+- ❌ Theme and personalization settings synced to the server profile
+
 
 ---
 
