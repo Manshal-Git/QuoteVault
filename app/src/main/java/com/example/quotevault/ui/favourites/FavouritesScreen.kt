@@ -119,7 +119,8 @@ fun FavouritesScreen(
                                         .background(
                                             MaterialTheme.colorScheme.surfaceVariant
                                         )
-                                        .padding(8.dp)
+                                        .padding(vertical = 8.dp)
+                                        .padding(start = 16.dp)
                                 )
                             }
 

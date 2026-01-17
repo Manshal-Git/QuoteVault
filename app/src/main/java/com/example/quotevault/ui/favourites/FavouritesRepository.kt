@@ -8,7 +8,7 @@ import com.example.quotevault.ui.quotes.Quote
 import com.example.quotevault.ui.quotes.QuoteDto
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -45,23 +45,29 @@ class FavouritesRepository @Inject constructor(
      * Get all favorite quotes as a Flow that updates when favorites change
      */
     fun getFavoriteQuotesFlow(): Flow<List<Quote>> {
-        return collectionsDataSource.collections.map { collectionsMap ->
-            val favoriteCollection = collectionsMap[Collection.DEFAULT_COLLECTION_ID]
-            val favoriteIds = favoriteCollection?.quoteIds ?: emptySet()
-            
-            if (favoriteIds.isEmpty()) {
-                emptyList()
-            } else {
-                try {
-                    val allQuotes = fetchQuotesFromDatabase()
-                    allQuotes.filter { quoteDto ->
-                        favoriteIds.contains(quoteDto.id)
-                    }.map { quoteDto ->
-                        quoteDto.toQuote(isFavorite = true)
+        return flow {
+            // First, collect the collections to get favorite IDs
+            collectionsDataSource.collections.collect { collectionsMap ->
+                val favoriteCollection = collectionsMap[Collection.DEFAULT_COLLECTION_ID]
+                val favoriteIds = favoriteCollection?.quoteIds ?: emptySet()
+
+                if (favoriteIds.isEmpty()) {
+                    emit(emptyList())
+                } else {
+                    try {
+                        // Now we can safely call the suspend function
+                        val allQuotes = fetchQuotesFromDatabase()
+                        
+                        val favorites = allQuotes.filter { quoteDto ->
+                            favoriteIds.contains(quoteDto.id)
+                        }.map { quoteDto ->
+                            quoteDto.toQuote(isFavorite = true)
+                        }
+                        emit(favorites)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error loading favorite quotes: $e")
+                        emit(emptyList())
                     }
-                } catch (e: Exception) {
-                    Log.e(TAG, "getFavoriteQuotesFlow: $e")
-                    emptyList()
                 }
             }
         }

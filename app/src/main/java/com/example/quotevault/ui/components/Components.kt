@@ -95,7 +95,7 @@ fun QuoteCard(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .dropShadow(
                 shape = RoundedCornerShape(Dimensions.radiusMD),

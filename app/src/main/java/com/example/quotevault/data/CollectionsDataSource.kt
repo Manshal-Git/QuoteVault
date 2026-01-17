@@ -114,7 +114,7 @@ class CollectionsDataSource @Inject constructor(
                     }
                 }
                 .decodeList<FavouriteDto>()
-            
+
             // Build collections map
             val collectionsMap = mutableMapOf<String, Collection>()
             
@@ -140,6 +140,11 @@ class CollectionsDataSource @Inject constructor(
                 val favoriteQuoteIds = favourites.map { it.quote_id }.toSet()
                 collectionsMap[Collection.DEFAULT_COLLECTION_ID] = defaultCollection.copy(
                     quoteIds = defaultCollection.quoteIds + favoriteQuoteIds
+                )
+            } else {
+                val favoriteQuoteIds = favourites.map { it.quote_id }.toSet()
+                collectionsMap[Collection.DEFAULT_COLLECTION_ID] = Collection.createDefault().copy(
+                    quoteIds = favoriteQuoteIds
                 )
             }
             
@@ -241,37 +246,74 @@ class CollectionsDataSource @Inject constructor(
     }
     
     /**
+     * Add a quote to a collection with upsert behavior (insert if not exists)
+     * This is a safer alternative to addQuoteToCollection that handles duplicates gracefully
+     */
+    suspend fun upsertQuoteToCollection(quoteId: String, collectionId: String) {
+        try {
+            // Check local state first for performance
+            val collection = _collections.value[collectionId]
+            if (collection?.quoteIds?.contains(quoteId) == true) {
+                return // Already exists locally
+            }
+            
+            if (collectionId == Collection.DEFAULT_COLLECTION_ID) {
+                val userId = getCurrentUserId() ?: return
+                
+                // Use upsert approach: try to insert, ignore if already exists
+                try {
+                    val favouriteDto = FavouriteDto(
+                        user_id = userId,
+                        quote_id = quoteId,
+                        created_at = java.time.Instant.now().toString()
+                    )
+                    database.from(Collection.DEFAULT_COLLECTION_ID).insert(favouriteDto)
+                } catch (e: Exception) {
+                    // If it's a unique constraint violation, that's fine - the record already exists
+                    if (e.message?.contains("duplicate key") == true || 
+                        e.message?.contains("unique constraint") == true ||
+                        e.message?.contains("UNIQUE constraint") == true) {
+                        Log.d(TAG, "Quote $quoteId already exists in favorites (expected)")
+                    } else {
+                        throw e // Re-throw if it's a different error
+                    }
+                }
+            } else {
+                // Similar approach for regular collections
+                try {
+                    val collectionQuoteDto = CollectionQuoteDto(
+                        collection_id = collectionId,
+                        quote_id = quoteId
+                    )
+                    database.from(COLLECTION_QUOTES_TABLE).insert(collectionQuoteDto)
+                } catch (e: Exception) {
+                    if (e.message?.contains("duplicate key") == true || 
+                        e.message?.contains("unique constraint") == true ||
+                        e.message?.contains("UNIQUE constraint") == true) {
+                        Log.d(TAG, "Quote $quoteId already exists in collection $collectionId (expected)")
+                    } else {
+                        throw e
+                    }
+                }
+            }
+            
+            // Update local state regardless of database operation result
+            val updatedCollection = (collection ?: Collection.createDefault()).copy(
+                quoteIds = (collection?.quoteIds ?: emptySet()) + quoteId
+            )
+            _collections.value = _collections.value + (collectionId to updatedCollection)
+            
+        } catch (e: Exception) {
+            Log.e(TAG, "Error upserting quote $quoteId to collection $collectionId", e)
+        }
+    }
+
+    /**
      * Add a quote to a collection
      */
     suspend fun addQuoteToCollection(quoteId: String, collectionId: String) {
-        try {
-            if (collectionId == Collection.DEFAULT_COLLECTION_ID) {
-                // Add to favourites table for default collection
-                val userId = getCurrentUserId() ?: return
-                val favouriteDto = FavouriteDto(
-                    user_id = userId,
-                    quote_id = quoteId,
-                    created_at = java.time.Instant.now().toString()
-                )
-                database.from(Collection.DEFAULT_COLLECTION_ID).insert(favouriteDto)
-            } else {
-                // Add to collection_quote table
-                val collectionQuoteDto = CollectionQuoteDto(
-                    collection_id = collectionId,
-                    quote_id = quoteId
-                )
-                database.from(COLLECTION_QUOTES_TABLE).insert(collectionQuoteDto)
-            }
-            
-            // Update local state
-            val collection = _collections.value[collectionId] ?: return
-            val updatedCollection = collection.copy(
-                quoteIds = collection.quoteIds + quoteId
-            )
-            _collections.value = _collections.value + (collectionId to updatedCollection)
-        } catch (e: Exception) {
-            Log.e(TAG, "Error adding quote $quoteId to collection $collectionId", e)
-        }
+        // Use the safer upsert method
+        upsertQuoteToCollection(quoteId, collectionId)
     }
     
     /**
@@ -316,6 +358,11 @@ class CollectionsDataSource @Inject constructor(
      * @return true if added, false if removed
      */
     suspend fun toggleQuoteInCollection(quoteId: String, collectionId: String): Boolean {
+        // Ensure collection exists, create default if needed
+        if (collectionId == Collection.DEFAULT_COLLECTION_ID && _collections.value[collectionId] == null) {
+            ensureDefaultCollection()
+        }
+        
         val collection = _collections.value[collectionId] ?: return false
         return if (collection.quoteIds.contains(quoteId)) {
             removeQuoteFromCollection(quoteId, collectionId)
