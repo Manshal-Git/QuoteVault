@@ -5,6 +5,8 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quotevault.R
+import com.example.quotevault.data.OfflineAuthCache
+import com.example.quotevault.utils.NetworkConnectivityManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,11 +19,18 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val repository: AuthRepository
+    private val repository: AuthRepository,
+    private val networkManager: NetworkConnectivityManager,
+    private val offlineAuthCache: OfflineAuthCache
 ) : ViewModel() {
     
     private val _state = MutableStateFlow(AuthState())
     val state: StateFlow<AuthState> = _state.asStateFlow()
+
+    init {
+        observeConnectivity()
+        checkPendingAuth()
+    }
 
     fun handleIntent(intent: AuthIntent) {
         when (intent) {
@@ -32,6 +41,36 @@ class AuthViewModel @Inject constructor(
             is AuthIntent.ClearError -> clearError()
             is AuthIntent.SignInOptionClicked -> setSignInMode(true)
             is AuthIntent.SignUpOptionClicked -> setSignInMode(false)
+            is AuthIntent.RetryConnection -> retryConnection()
+            is AuthIntent.ContinueOffline -> continueOffline()
+            is AuthIntent.ProcessPendingAuth -> processPendingAuth()
+        }
+    }
+
+    private fun observeConnectivity() {
+        viewModelScope.launch {
+            networkManager.connectivityFlow().collect { isConnected ->
+                _state.update { currentState ->
+                    currentState.copy(
+                        isConnected = isConnected,
+                        offlineMessage = if (!isConnected) {
+                            "No internet connection. Some features may be limited."
+                        } else null
+                    )
+                }
+                
+                // Auto-process pending auth when connection is restored
+                if (isConnected && _state.value.hasPendingAuth) {
+                    processPendingAuth()
+                }
+            }
+        }
+    }
+    
+    private fun checkPendingAuth() {
+        viewModelScope.launch {
+            val pendingAuth = offlineAuthCache.getPendingAuth()
+            _state.update { it.copy(hasPendingAuth = pendingAuth != null) }
         }
     }
 
@@ -72,12 +111,24 @@ class AuthViewModel @Inject constructor(
             _state.value = _state.value.copy(isLoading = true, error = null)
             
             repository.signIn(_state.value.email, _state.value.password)
-                .onSuccess {
-                    showToast(context.getString(R.string.sign_in_successful))
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        isSignedIn = true
-                    )
+                .onSuccess { result ->
+                    when (result) {
+                        is AuthResult.Success -> {
+                            showToast(context.getString(R.string.sign_in_successful))
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                isSignedIn = true,
+                                hasPendingAuth = false
+                            )
+                        }
+                        is AuthResult.OfflinePending -> {
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                offlineMessage = result.message,
+                                hasPendingAuth = true
+                            )
+                        }
+                    }
                 }
                 .onFailure { error ->
                     _state.value = _state.value.copy(
@@ -95,12 +146,24 @@ class AuthViewModel @Inject constructor(
             _state.value = _state.value.copy(isLoading = true, error = null)
             
             repository.signUp(_state.value.email, _state.value.password)
-                .onSuccess {
-                    showToast(context.getString(R.string.sign_up_successful))
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        isSignedIn = true
-                    )
+                .onSuccess { result ->
+                    when (result) {
+                        is AuthResult.Success -> {
+                            showToast(context.getString(R.string.sign_up_successful))
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                isSignedIn = true,
+                                hasPendingAuth = false
+                            )
+                        }
+                        is AuthResult.OfflinePending -> {
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                offlineMessage = result.message,
+                                hasPendingAuth = true
+                            )
+                        }
+                    }
                 }
                 .onFailure { error ->
                     _state.value = _state.value.copy(
@@ -123,17 +186,118 @@ class AuthViewModel @Inject constructor(
             _state.value = _state.value.copy(isLoading = true, error = null)
             
             repository.resetPassword(_state.value.email)
-                .onSuccess {
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        error = context.getString(R.string.password_reset_email_sent)
-                    )
+                .onSuccess { result ->
+                    when (result) {
+                        is AuthResult.Success -> {
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                error = context.getString(R.string.password_reset_email_sent)
+                            )
+                        }
+                        is AuthResult.OfflinePending -> {
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                offlineMessage = result.message
+                            )
+                        }
+                    }
                 }
                 .onFailure { error ->
                     _state.value = _state.value.copy(
                         isLoading = false,
                         error = error.message ?: context.getString(R.string.failed_to_send_reset_email)
                     )
+                }
+        }
+    }
+    
+    private fun retryConnection() {
+        if (networkManager.isConnected()) {
+            _state.update { 
+                it.copy(
+                    offlineMessage = null,
+                    error = null
+                ) 
+            }
+            if (_state.value.hasPendingAuth) {
+                processPendingAuth()
+            }
+        } else {
+            _state.update { 
+                it.copy(
+                    offlineMessage = "Still no internet connection. Please check your network settings."
+                ) 
+            }
+        }
+    }
+    
+    private fun continueOffline() {
+        viewModelScope.launch {
+            if (repository.canContinueOffline()) {
+                repository.enableOfflineMode()
+                    .onSuccess { email ->
+                        _state.update { 
+                            it.copy(
+                                isSignedIn = true,
+                                isOfflineMode = true,
+                                email = email,
+                                offlineMessage = "Continuing in offline mode with previous account: $email"
+                            ) 
+                        }
+                        showToast("Continuing offline with $email")
+                    }
+                    .onFailure {
+                        _state.update { 
+                            it.copy(
+                                error = "Cannot continue offline. Please sign in when connected to internet."
+                            ) 
+                        }
+                    }
+            } else {
+                _state.update { 
+                    it.copy(
+                        error = "Cannot continue offline. Please sign in when connected to internet."
+                    ) 
+                }
+            }
+        }
+    }
+    
+    private fun processPendingAuth() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            
+            repository.processPendingAuth()
+                .onSuccess { result ->
+                    when (result) {
+                        is AuthResult.Success -> {
+                            showToast("Authentication completed successfully!")
+                            _state.update { 
+                                it.copy(
+                                    isLoading = false,
+                                    isSignedIn = true,
+                                    hasPendingAuth = false,
+                                    offlineMessage = null
+                                ) 
+                            }
+                        }
+                        is AuthResult.OfflinePending -> {
+                            _state.update { 
+                                it.copy(
+                                    isLoading = false,
+                                    offlineMessage = result.message
+                                ) 
+                            }
+                        }
+                    }
+                }
+                .onFailure { error ->
+                    _state.update { 
+                        it.copy(
+                            isLoading = false,
+                            error = "Failed to process pending authentication: ${error.message}"
+                        ) 
+                    }
                 }
         }
     }
@@ -155,7 +319,10 @@ class AuthViewModel @Inject constructor(
     }
     
     private fun clearError() {
-        _state.value = _state.value.copy(error = null)
+        _state.value = _state.value.copy(
+            error = null,
+            offlineMessage = null
+        )
     }
 
     private fun showToast(msg: String) {

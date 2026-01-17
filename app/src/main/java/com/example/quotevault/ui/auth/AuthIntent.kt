@@ -8,4 +8,7 @@ sealed class AuthIntent {
     object SignUpOptionClicked : AuthIntent()
     object ForgotPasswordClicked : AuthIntent()
     object ClearError : AuthIntent()
+    object RetryConnection : AuthIntent()
+    object ContinueOffline : AuthIntent()
+    object ProcessPendingAuth : AuthIntent()
 }

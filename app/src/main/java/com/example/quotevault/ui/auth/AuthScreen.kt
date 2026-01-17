@@ -295,6 +295,98 @@ fun AuthScreen(
             }
         }
 
+        // Offline/Connection Status
+        if (!state.isConnected || state.offlineMessage != null || state.hasPendingAuth) {
+            Card(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (!state.isConnected) 
+                        MaterialTheme.colorScheme.errorContainer 
+                    else 
+                        MaterialTheme.colorScheme.primaryContainer
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    if (!state.isConnected) {
+                        Text(
+                            text = "⚠️ No Internet Connection",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                        Text(
+                            text = "Authentication requires internet connection",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                        
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            OutlinedButton(
+                                onClick = { viewModel.handleIntent(AuthIntent.RetryConnection) },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Retry")
+                            }
+                            
+                            Button(
+                                onClick = { viewModel.handleIntent(AuthIntent.ContinueOffline) },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Continue Offline")
+                            }
+                        }
+                    }
+                    
+                    if (state.hasPendingAuth) {
+                        Text(
+                            text = "📤 Pending Authentication",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        Text(
+                            text = "Your authentication will be processed when connection is restored",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                        
+                        if (state.isConnected) {
+                            Button(
+                                onClick = { viewModel.handleIntent(AuthIntent.ProcessPendingAuth) },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 8.dp)
+                            ) {
+                                Text("Process Now")
+                            }
+                        }
+                    }
+                    
+                    state.offlineMessage?.let { message ->
+                        Text(
+                            text = message,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (!state.isConnected) 
+                                MaterialTheme.colorScheme.onErrorContainer 
+                            else 
+                                MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                }
+            }
+        }
+
         // Error SnackBar
         if (state.error != null) {
             Snackbar(

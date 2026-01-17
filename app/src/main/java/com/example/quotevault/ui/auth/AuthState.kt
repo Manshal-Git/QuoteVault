@@ -8,5 +8,9 @@ data class AuthState(
     val isSignedIn: Boolean = false,
     val emailError: String? = null,
     val passwordError: String? = null,
-    val isSignInMode: Boolean = true
+    val isSignInMode: Boolean = true,
+    val isConnected: Boolean = true,
+    val isOfflineMode: Boolean = false,
+    val offlineMessage: String? = null,
+    val hasPendingAuth: Boolean = false
 )
