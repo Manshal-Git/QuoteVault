@@ -44,6 +44,7 @@ class AuthViewModel @Inject constructor(
             is AuthIntent.RetryConnection -> retryConnection()
             is AuthIntent.ContinueOffline -> continueOffline()
             is AuthIntent.ProcessPendingAuth -> processPendingAuth()
+            is AuthIntent.DismissPendingAuth -> dismissPendingAuth()
         }
     }
 
@@ -299,6 +300,18 @@ class AuthViewModel @Inject constructor(
                         ) 
                     }
                 }
+        }
+    }
+    
+    private fun dismissPendingAuth() {
+        viewModelScope.launch {
+            offlineAuthCache.clearPendingAuth()
+            _state.update { 
+                it.copy(
+                    hasPendingAuth = false,
+                    offlineMessage = context.getString(R.string.pending_auth_cancelled)
+                ) 
+            }
         }
     }
     

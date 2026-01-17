@@ -3,6 +3,7 @@ package com.example.quotevault.di
 import android.content.Context
 import androidx.work.WorkManager
 import com.example.quotevault.data.OfflineAuthCache
+import com.example.quotevault.data.OfflineQuotesCache
 import com.example.quotevault.utils.NetworkConnectivityManager
 import dagger.Module
 import dagger.Provides
@@ -37,5 +38,11 @@ object AppModule {
     @Singleton
     fun provideOfflineAuthCache(@ApplicationContext context: Context): OfflineAuthCache {
         return OfflineAuthCache(context)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideOfflineQuotesCache(@ApplicationContext context: Context): OfflineQuotesCache {
+        return OfflineQuotesCache(context)
     }
 }

@@ -16,7 +16,11 @@ data class QuotesState(
     val showCollectionSheet: Boolean = false,
     val selectedQuoteForCollection: String? = null,
     val collections: List<Collection> = emptyList(),
-    val fontSizeScale: Float = 1.0f
+    val fontSizeScale: Float = 1.0f,
+    val isConnected: Boolean = true,
+    val isOfflineMode: Boolean = false,
+    val offlineMessage: String? = null,
+    val hasOfflineData: Boolean = false
 )
 
 data class Quote(

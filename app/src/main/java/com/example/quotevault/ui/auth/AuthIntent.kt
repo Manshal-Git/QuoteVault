@@ -11,4 +11,5 @@ sealed class AuthIntent {
     object RetryConnection : AuthIntent()
     object ContinueOffline : AuthIntent()
     object ProcessPendingAuth : AuthIntent()
+    object DismissPendingAuth : AuthIntent()
 }

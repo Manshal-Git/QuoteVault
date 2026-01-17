@@ -121,15 +121,27 @@
     <!-- Auth Screen -->
     <string name="welcome_to_quotevault">Welcome to QuoteVault</string>
     <string name="discover_save_share">Discover, save, and share inspiring quotes</string>
+    <string name="inspiration_awaits">Inspiration Awaits</string>
+    <string name="auth_subtitle_sign_in">Sign In to access your daily wisdom\nand curated quotes.</string>
+    <string name="auth_subtitle_sign_up">Sign Up to access your daily wisdom\nand curated quotes.</string>
+    <string name="enter_your_email">Enter your email</string>
+    <string name="password">Password</string>
+    <string name="enter_password">Enter password</string>
+    <string name="forgot_password">Forgot password?</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_up">Sign Up</string>
-    <string name="email">Email</string>
-    <string name="password">Password</string>
-    <string name="forgot_password">Forgot password?</string>
     <string name="dont_have_account">Don\'t have an account?</string>
     <string name="already_have_account">Already have an account?</string>
+    <string name="create_one">Create one</string>
+    <string name="sign_in_link">Sign in</string>
     <string name="full_name">Full Name</string>
     <string name="confirm_password">Confirm Password</string>
+    <string name="no_internet_connection_warning">⚠️ No Internet Connection</string>
+    <string name="auth_requires_internet">Authentication requires internet connection</string>
+    <string name="retry">Retry</string>
+    <string name="continue_offline">Continue Offline</string>
+    <string name="pending_authentication">📤 Pending Authentication</string>
+    <string name="pending_auth_message">Your authentication will be processed when connection is restored</string>
     
     <!-- Auth Messages -->
     <string name="sign_in_successful">Sign in successful</string>
@@ -179,6 +191,28 @@
     <string name="widget_fallback_quote">The only way to do great work is to love what you do.</string>
     <string name="widget_fallback_author">Steve Jobs</string>
     <string name="widget_error_loading">Unable to load quote</string>
+    
+    <!-- Offline Messages -->
+    <string name="offline_mode">Offline Mode</string>
+    <string name="info">Info</string>
+    <string name="offline_icon">📶</string>
+    <string name="info_icon">ℹ️</string>
+    <string name="no_internet_connection">No Internet Connection</string>
+    <string name="offline_quotes_available">Showing cached quotes from your last online session</string>
+    <string name="no_offline_quotes">No cached quotes available. Please connect to internet to download quotes.</string>
+    <string name="connection_restored">Connection restored. Refreshing quotes…</string>
+    <string name="retry_connection">Retry Connection</string>
+    <string name="view_cached_quotes">View Cached</string>
+    <string name="cannot_refresh_offline">Cannot refresh quotes while offline. Please check your internet connection.</string>
+    <string name="pending_auth_cancelled">Pending authentication cancelled.</string>
+    <string name="dismiss_pending_auth">Dismiss pending authentication</string>
+    <string name="process_now">Process Now</string>
+    <string name="no_internet_connection_icon">📶 No Internet Connection</string>
+    <string name="connect_to_internet_message">Connect to internet to download quotes</string>
+    <string name="pull_down_refresh_message">Pull down to refresh or check your connection</string>
+    <string name="quote_of_the_day_content_description">Quote of the Day</string>
+    <string name="dismiss_content_description">Dismiss</string>
+    <string name="fab_expansion_label">FAB expansion</string>
     
     <!-- Date Formats -->
     <string name="date_format_full">EEEE, MMMM d, yyyy</string>

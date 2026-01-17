@@ -13,4 +13,6 @@ sealed class QuotesIntent {
     data class FilterByCategory(val category: String?) : QuotesIntent()
     object CloseCollectionSheet : QuotesIntent()
     object ClearError : QuotesIntent()
+    object RetryConnection : QuotesIntent()
+    object LoadOfflineData : QuotesIntent()
 }

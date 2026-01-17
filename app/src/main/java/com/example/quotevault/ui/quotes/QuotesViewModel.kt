@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quotevault.data.CollectionsDataSource
 import com.example.quotevault.data.UserPreferencesDataStore
+import com.example.quotevault.utils.NetworkConnectivityManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,8 @@ import javax.inject.Inject
 class QuotesViewModel @Inject constructor(
     private val repository: QuotesRepository,
     private val collectionsDataSource: CollectionsDataSource,
-    private val userPreferencesDataStore: UserPreferencesDataStore
+    private val userPreferencesDataStore: UserPreferencesDataStore,
+    private val networkManager: NetworkConnectivityManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(QuotesState())
@@ -25,10 +27,48 @@ class QuotesViewModel @Inject constructor(
         viewModelScope.launch {
             collectionsDataSource.loadCollections()
         }
-        handleIntent(QuotesIntent.LoadQuotes)
-        handleIntent(QuotesIntent.LoadQuoteOfTheDay)
+        observeConnectivity()
         observeCollections()
         observeUserPreferences()
+        checkOfflineData()
+        handleIntent(QuotesIntent.LoadQuotes)
+        handleIntent(QuotesIntent.LoadQuoteOfTheDay)
+    }
+    
+    private fun observeConnectivity() {
+        viewModelScope.launch {
+            networkManager.connectivityFlow().collect { isConnected ->
+                val wasOffline = !_state.value.isConnected
+                
+                _state.value = _state.value.copy(
+                    isConnected = isConnected,
+                    isOfflineMode = !isConnected,
+                    offlineMessage = if (!isConnected) {
+                        if (_state.value.hasOfflineData) {
+                            "You're offline. Showing cached quotes."
+                        } else {
+                            "You're offline and no cached quotes are available."
+                        }
+                    } else null
+                )
+                
+                // Auto-refresh when connection is restored
+                if (isConnected && wasOffline) {
+                    _state.value = _state.value.copy(
+                        offlineMessage = "Connection restored. Refreshing quotes..."
+                    )
+                    handleIntent(QuotesIntent.RefreshQuotes)
+                    handleIntent(QuotesIntent.LoadQuoteOfTheDay)
+                }
+            }
+        }
+    }
+    
+    private fun checkOfflineData() {
+        viewModelScope.launch {
+            val hasOfflineData = repository.hasOfflineData()
+            _state.value = _state.value.copy(hasOfflineData = hasOfflineData)
+        }
     }
     
     private fun observeCollections() {
@@ -68,6 +108,8 @@ class QuotesViewModel @Inject constructor(
             is QuotesIntent.FilterByCategory -> filterByCategory(intent.category)
             is QuotesIntent.CloseCollectionSheet -> closeCollectionSheet()
             is QuotesIntent.ClearError -> clearError()
+            is QuotesIntent.RetryConnection -> retryConnection()
+            is QuotesIntent.LoadOfflineData -> loadOfflineData()
         }
     }
     
@@ -149,13 +191,51 @@ class QuotesViewModel @Inject constructor(
                         quotes = quotes,
                         filteredQuotes = quotes,
                         availableCategories = categories,
-                        isLoading = false
+                        isLoading = false,
+                        hasOfflineData = quotes.isNotEmpty()
                     )
+                    
+                    // Clear offline message if we successfully loaded quotes
+                    if (_state.value.isConnected) {
+                        _state.value = _state.value.copy(offlineMessage = null)
+                    }
                 }
                 .onFailure { error ->
                     _state.value = _state.value.copy(
                         isLoading = false,
                         error = error.message ?: "Failed to load quotes"
+                    )
+                    
+                    // Try to load offline data if available
+                    if (!_state.value.isConnected) {
+                        loadOfflineData()
+                    }
+                }
+        }
+    }
+    
+    private fun loadOfflineData() {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true, error = null)
+            
+            repository.getOfflineQuotes()
+                .onSuccess { quotes ->
+                    val categories = quotes.map { it.category }.distinct().sorted()
+                    _state.value = _state.value.copy(
+                        quotes = quotes,
+                        filteredQuotes = quotes,
+                        availableCategories = categories,
+                        isLoading = false,
+                        hasOfflineData = true,
+                        offlineMessage = "Showing cached quotes from your last online session."
+                    )
+                }
+                .onFailure { error ->
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        error = error.message ?: "No offline quotes available",
+                        hasOfflineData = false,
+                        offlineMessage = "No cached quotes available. Please connect to internet to download quotes."
                     )
                 }
         }
@@ -165,10 +245,7 @@ class QuotesViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(
                 isRefreshing = true,
-                error = null,
-                isLoading = true,
-                quotes = emptyList(),
-                filteredQuotes = emptyList()
+                error = null
             )
 
             repository.refreshQuotes()
@@ -177,7 +254,9 @@ class QuotesViewModel @Inject constructor(
                     _state.value = _state.value.copy(
                         quotes = quotes,
                         availableCategories = categories,
-                        isRefreshing = false
+                        isRefreshing = false,
+                        hasOfflineData = true,
+                        offlineMessage = null
                     )
                     applyFilters()
                 }
@@ -274,7 +353,27 @@ class QuotesViewModel @Inject constructor(
         _state.value = _state.value.copy(filteredQuotes = filtered)
     }
     
+    private fun retryConnection() {
+        if (networkManager.isConnected()) {
+            _state.value = _state.value.copy(
+                offlineMessage = "Connection restored. Refreshing quotes...",
+                error = null
+            )
+            handleIntent(QuotesIntent.RefreshQuotes)
+            handleIntent(QuotesIntent.LoadQuoteOfTheDay)
+        } else {
+            _state.value = _state.value.copy(
+                offlineMessage = "Still no internet connection. Please check your network settings."
+            )
+        }
+    }
+    
     private fun clearError() {
-        _state.value = _state.value.copy(error = null)
+        _state.value = _state.value.copy(
+            error = null,
+            offlineMessage = if (!_state.value.isConnected && _state.value.hasOfflineData) {
+                "You're offline. Showing cached quotes."
+            } else null
+        )
     }
 }

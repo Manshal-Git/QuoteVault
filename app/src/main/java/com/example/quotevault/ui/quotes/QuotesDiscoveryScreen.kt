@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.quotevault.R
@@ -55,6 +56,81 @@ fun QuotesDiscoveryScreen(
     }
     
     Box(modifier = modifier.fillMaxSize()) {
+        // Offline Status Banner
+        if (!state.isConnected || state.offlineMessage != null) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .zIndex(1f),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (!state.isConnected) 
+                        MaterialTheme.colorScheme.errorContainer 
+                    else 
+                        MaterialTheme.colorScheme.primaryContainer
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(12.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = if (!state.isConnected) stringResource(R.string.offline_icon) else stringResource(R.string.info_icon),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = if (!state.isConnected) stringResource(R.string.offline_mode) else stringResource(R.string.info),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = if (!state.isConnected) 
+                                MaterialTheme.colorScheme.onErrorContainer 
+                            else 
+                                MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                    
+                    state.offlineMessage?.let { message ->
+                        Text(
+                            text = message,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (!state.isConnected) 
+                                MaterialTheme.colorScheme.onErrorContainer 
+                            else 
+                                MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                    
+                    if (!state.isConnected) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            OutlinedButton(
+                                onClick = { viewModel.handleIntent(QuotesIntent.RetryConnection) },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(stringResource(R.string.retry))
+                            }
+                            
+                            if (state.hasOfflineData && state.filteredQuotes.isEmpty()) {
+                                Button(
+                                    onClick = { viewModel.handleIntent(QuotesIntent.LoadOfflineData) },
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(stringResource(R.string.view_cached_quotes))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
         // Main Content - Only show when Quote of the Day is dismissed
         AnimatedVisibility(
             visible = !showQuoteOfTheDay || state.quoteOfTheDay == null,
@@ -64,13 +140,22 @@ fun QuotesDiscoveryScreen(
             PullToRefreshBox(
                 isRefreshing = state.isRefreshing,
                 onRefresh = {
-                    viewModel.handleIntent(QuotesIntent.RefreshQuotes)
+                    if (state.isConnected) {
+                        viewModel.handleIntent(QuotesIntent.RefreshQuotes)
+                    } else {
+                        viewModel.handleIntent(QuotesIntent.LoadOfflineData)
+                    }
                 },
                 modifier = Modifier.fillMaxSize()
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize()
                 ) {
+                    // Add top padding if offline banner is showing
+                    if (!state.isConnected || state.offlineMessage != null) {
+                        Spacer(modifier = Modifier.height(80.dp))
+                    }
+                    
                     // Search Bar
                     QuotesSearchBar(
                         query = state.searchQuery,
@@ -158,22 +243,38 @@ fun QuotesDiscoveryScreen(
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
+                                    val (title, subtitle) = when {
+                                        !state.isConnected && !state.hasOfflineData -> {
+                                            stringResource(R.string.no_internet_connection_icon) to stringResource(R.string.connect_to_internet_message)
+                                        }
+                                        state.searchQuery.isNotEmpty() || state.selectedCategory != null -> {
+                                            stringResource(R.string.no_quotes_found) to stringResource(R.string.adjust_search_filters)
+                                        }
+                                        else -> {
+                                            stringResource(R.string.no_quotes_available) to stringResource(R.string.pull_down_refresh_message)
+                                        }
+                                    }
+                                    
                                     Text(
-                                        text = if (state.searchQuery.isNotEmpty() || state.selectedCategory != null) {
-                                            stringResource(R.string.no_quotes_found)
-                                        } else {
-                                            stringResource(R.string.no_quotes_available)
-                                        },
+                                        text = title,
                                         style = MaterialTheme.typography.bodyLarge,
                                         color = MaterialTheme.colorScheme.onBackground
                                     )
                                     
-                                    if (state.searchQuery.isNotEmpty() || state.selectedCategory != null) {
-                                        Text(
-                                            text = stringResource(R.string.adjust_search_filters),
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
+                                    Text(
+                                        text = subtitle,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    
+                                    // Show retry button for offline scenarios
+                                    if (!state.isConnected && !state.hasOfflineData) {
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Button(
+                                            onClick = { viewModel.handleIntent(QuotesIntent.RetryConnection) }
+                                        ) {
+                                            Text(stringResource(R.string.retry_connection))
+                                        }
                                     }
                                 }
                             }
@@ -255,7 +356,7 @@ fun QuotesDiscoveryScreen(
                         fadeIn() + expandHorizontally() togetherWith 
                         fadeOut() + shrinkHorizontally()
                     },
-                    label = "FAB expansion"
+                    label = stringResource(R.string.fab_expansion_label)
                 ) { expanded ->
                     if (expanded) {
                         // Expanded state with icon and text
@@ -266,7 +367,7 @@ fun QuotesDiscoveryScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Star,
-                                contentDescription = "Quote of the Day"
+                                contentDescription = stringResource(R.string.quote_of_the_day_content_description)
                             )
                             Text(
                                 text = stringResource(R.string.quote_of_the_day),
@@ -277,7 +378,7 @@ fun QuotesDiscoveryScreen(
                         // Collapsed state with icon only
                         Icon(
                             imageVector = Icons.Default.Star,
-                            contentDescription = "Quote of the Day",
+                            contentDescription = stringResource(R.string.quote_of_the_day_content_description),
                             modifier = Modifier.padding(8.dp)
                         )
                     }
@@ -413,7 +514,7 @@ private fun QuoteOfTheDayOverlay(
                     IconButton(onClick = onDismiss) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Dismiss",
+                            contentDescription = stringResource(R.string.dismiss_content_description),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
@@ -21,12 +22,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.quotevault.R
 import com.example.quotevault.ui.components.PrimaryButton
 import com.example.quotevault.ui.theme.TextSecondaryDark
 import com.example.quotevault.ui.theme.TextTertiaryDark
@@ -87,13 +90,16 @@ fun AuthScreen(
             Spacer(Modifier.height(132.dp))
             // Title
             Text(
-                text = "Inspiration Awaits",
+                text = stringResource(R.string.inspiration_awaits),
                 style = MaterialTheme.typography.displayLarge,
                 color = MaterialTheme.colorScheme.onBackground
             )
             
             Text(
-                text = "Sign ${if (state.isSignInMode) "In" else "Up"} to access your daily wisdom\nand curated quotes.",
+                text = if (state.isSignInMode) 
+                    stringResource(R.string.auth_subtitle_sign_in) 
+                else 
+                    stringResource(R.string.auth_subtitle_sign_up),
                 style = MaterialTheme.typography.bodyMedium,
                 color = TextSecondaryDark,
                 modifier = Modifier.padding(top = 8.dp)
@@ -103,7 +109,7 @@ fun AuthScreen(
             
             // Email Field
             Text(
-                text = "Email Address",
+                text = stringResource(R.string.email_address),
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
                 color = MaterialTheme.colorScheme.onBackground
             )
@@ -116,7 +122,7 @@ fun AuthScreen(
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = {
                     Text(
-                        text = "Enter your email",
+                        text = stringResource(R.string.enter_your_email),
                         color = TextTertiaryDark
                     )
                 },
@@ -159,7 +165,7 @@ fun AuthScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Password",
+                    text = stringResource(R.string.password),
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
                     color = MaterialTheme.colorScheme.onBackground
                 )
@@ -173,7 +179,7 @@ fun AuthScreen(
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = {
                     Text(
-                        text = "Enter password",
+                        text = stringResource(R.string.enter_password),
                         color = TextTertiaryDark
                     )
                 },
@@ -217,7 +223,7 @@ fun AuthScreen(
                     onClick = { onNavigateToPasswordReset(state.email) }
                 ) {
                     Text(
-                        text = "Forgot password?",
+                        text = stringResource(R.string.forgot_password),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -229,7 +235,7 @@ fun AuthScreen(
             // Sign In Button
             Box {
                 val primaryButtonText = if (!state.isLoading) {
-                    if (state.isSignInMode) "Sign In" else "Sign Up"
+                    if (state.isSignInMode) stringResource(R.string.sign_in) else stringResource(R.string.sign_up)
                 } else {
                     ""
                 }
@@ -261,7 +267,7 @@ fun AuthScreen(
             ) {
                 if (state.isSignInMode) {
                     Text(
-                        text = "Don't have an account?  ",
+                        text = stringResource(R.string.dont_have_account),
                         style = MaterialTheme.typography.bodyMedium,
                         color = TextSecondaryDark
                     )
@@ -270,14 +276,14 @@ fun AuthScreen(
                         contentPadding = PaddingValues(0.dp)
                     ) {
                         Text(
-                            text = "Create one",
+                            text = stringResource(R.string.create_one),
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
                 } else {
                     Text(
-                        text = "Already have an account?  ",
+                        text = stringResource(R.string.already_have_account),
                         style = MaterialTheme.typography.bodyMedium,
                         color = TextSecondaryDark
                     )
@@ -286,7 +292,7 @@ fun AuthScreen(
                         contentPadding = PaddingValues(0.dp)
                     ) {
                         Text(
-                            text = "Sign in",
+                            text = stringResource(R.string.sign_in_link),
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -314,12 +320,12 @@ fun AuthScreen(
                 ) {
                     if (!state.isConnected) {
                         Text(
-                            text = "⚠️ No Internet Connection",
+                            text = stringResource(R.string.no_internet_connection_warning),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onErrorContainer
                         )
                         Text(
-                            text = "Authentication requires internet connection",
+                            text = stringResource(R.string.auth_requires_internet),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onErrorContainer,
                             modifier = Modifier.padding(top = 4.dp)
@@ -335,39 +341,68 @@ fun AuthScreen(
                                 onClick = { viewModel.handleIntent(AuthIntent.RetryConnection) },
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text("Retry")
+                                Text(stringResource(R.string.retry))
                             }
                             
                             Button(
                                 onClick = { viewModel.handleIntent(AuthIntent.ContinueOffline) },
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text("Continue Offline")
+                                Text(stringResource(R.string.continue_offline))
                             }
                         }
                     }
                     
                     if (state.hasPendingAuth) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(R.string.pending_authentication),
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            
+                            IconButton(
+                                onClick = { viewModel.handleIntent(AuthIntent.DismissPendingAuth) }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = stringResource(R.string.dismiss_pending_auth),
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
+                        }
+                        
                         Text(
-                            text = "📤 Pending Authentication",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                        Text(
-                            text = "Your authentication will be processed when connection is restored",
+                            text = stringResource(R.string.pending_auth_message),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier.padding(top = 4.dp)
                         )
                         
-                        if (state.isConnected) {
-                            Button(
-                                onClick = { viewModel.handleIntent(AuthIntent.ProcessPendingAuth) },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 8.dp)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            if (state.isConnected) {
+                                Button(
+                                    onClick = { viewModel.handleIntent(AuthIntent.ProcessPendingAuth) },
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(stringResource(R.string.process_now))
+                                }
+                            }
+                            
+                            OutlinedButton(
+                                onClick = { viewModel.handleIntent(AuthIntent.DismissPendingAuth) },
+                                modifier = Modifier.weight(1f)
                             ) {
-                                Text("Process Now")
+                                Text(stringResource(R.string.cancel))
                             }
                         }
                     }
@@ -395,7 +430,7 @@ fun AuthScreen(
                     .padding(16.dp),
                 action = {
                     TextButton(onClick = { viewModel.handleIntent(AuthIntent.ClearError) }) {
-                        Text("Dismiss")
+                        Text(stringResource(R.string.dismiss))
                     }
                 }
             ) {
