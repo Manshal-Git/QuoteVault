@@ -303,7 +303,7 @@ private fun ThemeColorOption(
         }
 
         Text(
-            text = theme.displayName,
+            text = theme.getDisplayName(),
             style = MaterialTheme.typography.labelLarge,
             color = if (isSelected)
                 MaterialTheme.colorScheme.onPrimaryContainer
@@ -312,7 +312,7 @@ private fun ThemeColorOption(
         )
 
         Text(
-            text = theme.description,
+            text = theme.getDescription(),
             style = MaterialTheme.typography.labelSmall,
             color = if (isSelected)
                 MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)

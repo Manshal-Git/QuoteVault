@@ -1,9 +1,12 @@
 package com.example.quotevault.ui.profile
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.quotevault.R
 import com.example.quotevault.ui.auth.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AccountDataViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
     
     private val _state = MutableStateFlow(AccountDataState())
@@ -75,7 +79,7 @@ class AccountDataViewModel @Inject constructor(
                 .onFailure { error ->
                     _state.value = _state.value.copy(
                         isLoading = false,
-                        error = error.message ?: "Failed to change password"
+                        error = error.message ?: context.getString(R.string.failed_to_change_password)
                     )
                 }
         }
@@ -86,21 +90,21 @@ class AccountDataViewModel @Inject constructor(
         
         if (_state.value.currentPassword.isEmpty()) {
             _state.value = _state.value.copy(
-                currentPasswordError = "Current password is required"
+                currentPasswordError = context.getString(R.string.current_password_required)
             )
             isValid = false
         }
         
         if (_state.value.newPassword.isEmpty() || _state.value.newPassword.length < 6) {
             _state.value = _state.value.copy(
-                newPasswordError = "Password must be at least 6 characters"
+                newPasswordError = context.getString(R.string.password_min_length)
             )
             isValid = false
         }
         
         if (_state.value.newPassword != _state.value.confirmPassword) {
             _state.value = _state.value.copy(
-                confirmPasswordError = "Passwords do not match"
+                confirmPasswordError = context.getString(R.string.passwords_do_not_match)
             )
             isValid = false
         }
@@ -111,7 +115,7 @@ class AccountDataViewModel @Inject constructor(
     private fun deleteAccount() {
         viewModelScope.launch {
             _state.value = _state.value.copy(
-                error = "Account deletion is not available in demo mode"
+                error = context.getString(R.string.account_deletion_not_available)
             )
         }
     }

@@ -123,7 +123,7 @@ fun ProfileScreen(
             Text(stringResource(R.string.sign_out))
         }
         
-        // Error Snackbar
+        // Error SnackBar
         if (state.error != null) {
             Snackbar(
                 modifier = Modifier.padding(16.dp),
@@ -143,7 +143,7 @@ fun ProfileScreen(
 private fun SettingsCard(
     title: String,
     description: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     onClick: () -> Unit
 ) {
     Row(

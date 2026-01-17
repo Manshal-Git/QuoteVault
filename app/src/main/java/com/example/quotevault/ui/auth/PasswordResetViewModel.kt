@@ -1,8 +1,11 @@
 package com.example.quotevault.ui.auth
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.quotevault.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PasswordResetViewModel @Inject constructor(
-    private val repository: AuthRepository
+    private val repository: AuthRepository,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
     
     private val _state = MutableStateFlow(PasswordResetState())
@@ -48,7 +52,7 @@ class PasswordResetViewModel @Inject constructor(
                 .onFailure { error ->
                     _state.value = _state.value.copy(
                         isLoading = false,
-                        error = error.message ?: "Failed to send reset email"
+                        error = error.message ?: context.getString(R.string.failed_to_send_reset_email)
                     )
                 }
         }
@@ -56,7 +60,7 @@ class PasswordResetViewModel @Inject constructor(
     
     private fun validateEmail(): Boolean {
         if (_state.value.email.isEmpty() || !_state.value.email.contains("@")) {
-            _state.value = _state.value.copy(emailError = "Please enter a valid email")
+            _state.value = _state.value.copy(emailError = context.getString(R.string.please_enter_valid_email))
             return false
         }
         return true

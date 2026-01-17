@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.quotevault.R
 import com.example.quotevault.ui.auth.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -61,7 +62,7 @@ class ProfileViewModel @Inject constructor(
                 .onFailure { error ->
                     _state.value = _state.value.copy(
                         isSyncing = false,
-                        error = error.message ?: "Failed to update dark mode"
+                        error = error.message ?: context.getString(R.string.failed_to_update_dark_mode)
                     )
                 }
         }
@@ -78,7 +79,7 @@ class ProfileViewModel @Inject constructor(
                 .onFailure { error ->
                     _state.value = _state.value.copy(
                         isSyncing = false,
-                        error = error.message ?: "Failed to update font size"
+                        error = error.message ?: context.getString(R.string.failed_to_update_font_size)
                     )
                 }
         }
@@ -95,7 +96,7 @@ class ProfileViewModel @Inject constructor(
                 .onFailure { error ->
                     _state.value = _state.value.copy(
                         isSyncing = false,
-                        error = error.message ?: "Failed to update theme"
+                        error = error.message ?: context.getString(R.string.failed_to_update_theme)
                     )
                 }
         }
@@ -109,16 +110,16 @@ class ProfileViewModel @Inject constructor(
                 .onSuccess {
                     _state.value = _state.value.copy(isSyncing = false)
                     val message = if (enabled) {
-                        "Daily quote notifications enabled"
+                        context.getString(R.string.daily_quote_notifications_enabled)
                     } else {
-                        "Daily quote notifications disabled"
+                        context.getString(R.string.daily_quote_notifications_disabled)
                     }
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 }
                 .onFailure { error ->
                     _state.value = _state.value.copy(
                         isSyncing = false,
-                        error = error.message ?: "Failed to update notifications"
+                        error = error.message ?: context.getString(R.string.failed_to_update_notifications)
                     )
                 }
         }
@@ -131,12 +132,12 @@ class ProfileViewModel @Inject constructor(
             repository.updateNotificationTime(hour, minute)
                 .onSuccess {
                     _state.value = _state.value.copy(isSyncing = false)
-                    Toast.makeText(context, "Notification time updated", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.notification_time_updated), Toast.LENGTH_SHORT).show()
                 }
                 .onFailure { error ->
                     _state.value = _state.value.copy(
                         isSyncing = false,
-                        error = error.message ?: "Failed to update notification time"
+                        error = error.message ?: context.getString(R.string.failed_to_update_notification_time)
                     )
                 }
         }
@@ -145,9 +146,9 @@ class ProfileViewModel @Inject constructor(
     private fun signOut() {
         viewModelScope.launch {
             authRepository.signOut().onSuccess {
-                Toast.makeText(context, "Signed out", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.signed_out), Toast.LENGTH_SHORT).show()
             }.onFailure {
-                Toast.makeText(context, "Failed to sign out", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.failed_to_sign_out), Toast.LENGTH_SHORT).show()
             }
         }
     }

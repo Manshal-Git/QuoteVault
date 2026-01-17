@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.quotevault.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -72,7 +73,7 @@ class AuthViewModel @Inject constructor(
             
             repository.signIn(_state.value.email, _state.value.password)
                 .onSuccess {
-                    showToast("Sign in successful")
+                    showToast(context.getString(R.string.sign_in_successful))
                     _state.value = _state.value.copy(
                         isLoading = false,
                         isSignedIn = true
@@ -81,7 +82,7 @@ class AuthViewModel @Inject constructor(
                 .onFailure { error ->
                     _state.value = _state.value.copy(
                         isLoading = false,
-                        error = error.message ?: "Sign in failed"
+                        error = error.message ?: context.getString(R.string.sign_in_failed)
                     )
                 }
         }
@@ -95,7 +96,7 @@ class AuthViewModel @Inject constructor(
             
             repository.signUp(_state.value.email, _state.value.password)
                 .onSuccess {
-                    showToast("Sign up successful")
+                    showToast(context.getString(R.string.sign_up_successful))
                     _state.value = _state.value.copy(
                         isLoading = false,
                         isSignedIn = true
@@ -104,7 +105,7 @@ class AuthViewModel @Inject constructor(
                 .onFailure { error ->
                     _state.value = _state.value.copy(
                         isLoading = false,
-                        error = error.message ?: "Sign up failed"
+                        error = error.message ?: context.getString(R.string.sign_up_failed)
                     )
                 }
         }
@@ -113,7 +114,7 @@ class AuthViewModel @Inject constructor(
     private fun forgotPassword() {
         if (_state.value.email.isEmpty()) {
             _state.value = _state.value.copy(
-                emailError = "Please enter your email"
+                emailError = context.getString(R.string.please_enter_email)
             )
             return
         }
@@ -125,13 +126,13 @@ class AuthViewModel @Inject constructor(
                 .onSuccess {
                     _state.value = _state.value.copy(
                         isLoading = false,
-                        error = "Password reset email sent"
+                        error = context.getString(R.string.password_reset_email_sent)
                     )
                 }
                 .onFailure { error ->
                     _state.value = _state.value.copy(
                         isLoading = false,
-                        error = error.message ?: "Failed to send reset email"
+                        error = error.message ?: context.getString(R.string.failed_to_send_reset_email)
                     )
                 }
         }
@@ -141,12 +142,12 @@ class AuthViewModel @Inject constructor(
         var isValid = true
         
         if (_state.value.email.isEmpty() || !_state.value.email.contains("@")) {
-            _state.value = _state.value.copy(emailError = "Please enter a valid email")
+            _state.value = _state.value.copy(emailError = context.getString(R.string.please_enter_valid_email))
             isValid = false
         }
         
         if (_state.value.password.isEmpty() || _state.value.password.length < 6) {
-            _state.value = _state.value.copy(passwordError = "Password must be at least 6 characters")
+            _state.value = _state.value.copy(passwordError = context.getString(R.string.password_min_length))
             isValid = false
         }
         
