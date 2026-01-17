@@ -25,6 +25,9 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class DailyQuoteWidget : GlanceAppWidget() {
     
@@ -37,7 +40,10 @@ class DailyQuoteWidget : GlanceAppWidget() {
                 QuoteOfTheDayWidget(
                     quote = quote.text,
                     author = quote.author,
-                    category = quote.category.uppercase()
+                    category = quote.category.uppercase(),
+                    date = LocalDate.now().format(
+                        DateTimeFormatter.ofPattern("EEEE, MMM d", Locale.getDefault())
+                    )
                 )
             }
         }
@@ -74,7 +80,8 @@ interface WidgetEntryPoint {
 fun QuoteOfTheDayWidget(
     quote: String,
     author: String,
-    category: String = "INSPIRATION"
+    category: String = "INSPIRATION",
+    date: String
 ) {
     // Main container with gradient background
     Box(
@@ -89,20 +96,39 @@ fun QuoteOfTheDayWidget(
         Column(
             modifier = GlanceModifier
                 .fillMaxSize()
-                .padding(20.dp),
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 20.dp, top = 10.dp)
+            ,
             verticalAlignment = Alignment.Vertical.CenterVertically,
             horizontalAlignment = Alignment.Horizontal.CenterHorizontally
         ) {
-            // Top section - Category badge
+            // Top section - Category badge and date
             Row(
                 modifier = GlanceModifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.Horizontal.Start
+                horizontalAlignment = Alignment.Horizontal.Start,
+                verticalAlignment = Alignment.Vertical.Top
             ) {
-                CategoryBadge(category = category)
+                Column(
+                    modifier = GlanceModifier.defaultWeight(),
+                    verticalAlignment = Alignment.Vertical.Top
+                ) {
+                    CategoryBadge(category = category)
+                    
+                    Spacer(modifier = GlanceModifier.height(4.dp))
+                    
+                    // Date display
+                    Text(
+                        text = date,
+                        modifier = GlanceModifier.padding(start = 2.dp),
+                        style = TextStyle(
+                            color = GlanceWidgetTheme.textOnGradient,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Normal
+                        )
+                    )
+                }
+
                 // Quote icon/decoration
-
-                Spacer(modifier = GlanceModifier.defaultWeight())
-
                 Image(
                     provider = ImageProvider(R.drawable.ic_quote_foreground),
                     contentDescription = "Quote",

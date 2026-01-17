@@ -174,4 +174,8 @@
     <string name="widget_fallback_quote">The only way to do great work is to love what you do.</string>
     <string name="widget_fallback_author">Steve Jobs</string>
     <string name="widget_error_loading">Unable to load quote</string>
+    
+    <!-- Date Formats -->
+    <string name="date_format_full">EEEE, MMMM d, yyyy</string>
+    <string name="date_format_widget">EEEE, MMM d</string>
 </resources>
