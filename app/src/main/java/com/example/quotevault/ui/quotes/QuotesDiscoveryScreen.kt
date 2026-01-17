@@ -197,6 +197,7 @@ fun QuotesDiscoveryScreen(
                                         author = quote.author,
                                         category = quote.category,
                                         isFavorite = quote.isFavorite,
+                                        fontSizeScale = state.fontSizeScale,
                                         onFavoriteClick = {
                                             viewModel.handleIntent(QuotesIntent.OpenCollectionSheet(quote.id))
                                         },
@@ -226,6 +227,7 @@ fun QuotesDiscoveryScreen(
             state.quoteOfTheDay?.let { qotd ->
                 QuoteOfTheDayOverlay(
                     quote = qotd,
+                    fontSizeScale = state.fontSizeScale,
                     onDismiss = { showQuoteOfTheDay = false },
                     onAddToCollection = {
                         viewModel.handleIntent(QuotesIntent.OpenCollectionSheet(qotd.id))
@@ -322,6 +324,7 @@ fun QuotesDiscoveryScreen(
     quoteToShare?.let { quote ->
         ShareQuoteDialog(
             quote = quote,
+            fontSizeScale = state.fontSizeScale,
             onDismiss = { quoteToShare = null },
             onShareComplete = { message ->
                 shareMessage = message
@@ -359,6 +362,7 @@ fun QuotesDiscoveryScreen(
 @Composable
 private fun QuoteOfTheDayOverlay(
     quote: Quote,
+    fontSizeScale: Float,
     onDismiss: () -> Unit,
     onAddToCollection: () -> Unit,
     onShare: () -> Unit
@@ -419,6 +423,7 @@ private fun QuoteOfTheDayOverlay(
                 FeaturedQuoteCard(
                     quote = quote.text,
                     author = quote.author,
+                    fontSizeScale = fontSizeScale,
                     modifier = Modifier.fillMaxWidth()
                 )
                 

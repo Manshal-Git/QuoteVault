@@ -25,6 +25,7 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.first
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -32,8 +33,9 @@ import java.util.Locale
 class DailyQuoteWidget : GlanceAppWidget() {
     
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        // Get the daily quote data
+        // Get the daily quote data and user preferences
         val quote = getQuoteOfTheDay(context)
+        val fontSizeScale = getFontSizeScale(context)
         
         provideContent {
             GlanceTheme {
@@ -43,7 +45,8 @@ class DailyQuoteWidget : GlanceAppWidget() {
                     category = quote.category.uppercase(),
                     date = LocalDate.now().format(
                         DateTimeFormatter.ofPattern("EEEE, MMM d", Locale.getDefault())
-                    )
+                    ),
+                    fontSizeScale = fontSizeScale
                 )
             }
         }
@@ -68,12 +71,27 @@ class DailyQuoteWidget : GlanceAppWidget() {
             )
         }
     }
+    
+    private suspend fun getFontSizeScale(context: Context): Float {
+        return try {
+            val entryPoint = EntryPointAccessors.fromApplication(
+                context.applicationContext,
+                WidgetEntryPoint::class.java
+            )
+            val userPreferences = entryPoint.userPreferencesDataStore()
+            // Get the first value from the flow
+            userPreferences.userPreferences.first().fontSize
+        } catch (e: Exception) {
+            1.0f // Default font size scale
+        }
+    }
 }
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
 interface WidgetEntryPoint {
     fun supabaseClient(): SupabaseClient
+    fun userPreferencesDataStore(): com.example.quotevault.data.UserPreferencesDataStore
 }
 
 @Composable
@@ -81,7 +99,8 @@ fun QuoteOfTheDayWidget(
     quote: String,
     author: String,
     category: String = "INSPIRATION",
-    date: String
+    date: String,
+    fontSizeScale: Float = 1.0f
 ) {
     // Main container with gradient background
     Box(
@@ -138,12 +157,12 @@ fun QuoteOfTheDayWidget(
                 )
             }
 
-            // Quote text - centered and prominent
+            // Quote text - centered and prominent with font size scaling
             Text(
                 text = "\"$quote\"",
                 style = TextStyle(
                     color = GlanceWidgetTheme.textOnGradient,
-                    fontSize = 18.sp,
+                    fontSize = (18.sp.value * fontSizeScale).sp,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center
                 ),
@@ -152,12 +171,12 @@ fun QuoteOfTheDayWidget(
 
             Spacer(modifier = GlanceModifier.height(12.dp))
 
-            // Author attribution
+            // Author attribution with font size scaling
             Text(
                 text = "— $author",
                 style = TextStyle(
                     color = GlanceWidgetTheme.textOnGradient,
-                    fontSize = 14.sp,
+                    fontSize = (14.sp.value * fontSizeScale).sp,
                     fontWeight = FontWeight.Normal,
                     textAlign = TextAlign.Center
                 ),

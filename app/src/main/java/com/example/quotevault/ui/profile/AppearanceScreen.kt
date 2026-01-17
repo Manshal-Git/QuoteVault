@@ -135,84 +135,106 @@ private fun FontSizeAdjustment(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.quote_font_size),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Text(
+                    text = "Choose your preferred text size for quotes",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            // Font Size Options
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.quote_font_size),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    Text(
-                        text = "Adjust text size for quotes",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
-                Text(
-                    text = when {
-                        fontSize < 0.9f -> stringResource(R.string.font_size_small)
-                        fontSize > 1.1f -> stringResource(R.string.font_size_large)
-                        else -> stringResource(R.string.font_size_medium)
-                    },
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary
+                FontSizeOption(
+                    label = stringResource(R.string.font_size_small),
+                    value = 0.8f,
+                    isSelected = fontSize <= 0.85f,
+                    onClick = { onFontSizeChange(0.8f) },
+                    modifier = Modifier.weight(1f)
+                )
+                
+                FontSizeOption(
+                    label = stringResource(R.string.font_size_medium),
+                    value = 1.0f,
+                    isSelected = fontSize > 0.85f && fontSize <= 1.15f,
+                    onClick = { onFontSizeChange(1.0f) },
+                    modifier = Modifier.weight(1f)
+                )
+                
+                FontSizeOption(
+                    label = stringResource(R.string.font_size_large),
+                    value = 1.3f,
+                    isSelected = fontSize > 1.15f,
+                    onClick = { onFontSizeChange(1.3f) },
+                    modifier = Modifier.weight(1f)
                 )
             }
 
-            // Slider
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Slider(
-                    value = fontSize,
-                    onValueChange = onFontSizeChange,
-                    valueRange = 0.8f..1.4f,
-                    steps = 5
-                )
-
-                // Preview Text
-                Text(
-                    text = stringResource(R.string.font_size_preview),
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontSize = MaterialTheme.typography.bodyLarge.fontSize * fontSize
-                    ),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-
-                // Size Labels
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = stringResource(R.string.font_size_small),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    Text(
-                        text = stringResource(R.string.font_size_medium),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    Text(
-                        text = stringResource(R.string.font_size_large),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
+            // Preview Text
+            Text(
+                text = stringResource(R.string.font_size_preview),
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontSize = MaterialTheme.typography.bodyLarge.fontSize * fontSize
+                ),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
         }
+    }
+}
+
+@Composable
+private fun FontSizeOption(
+    label: String,
+    value: Float,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .clip(MaterialTheme.shapes.medium)
+            .background(
+                if (isSelected) MaterialTheme.colorScheme.primaryContainer
+                else MaterialTheme.colorScheme.surfaceVariant
+            )
+            .clickable(onClick = onClick)
+            .padding(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        // Sample text showing the size
+        Text(
+            text = "Aa",
+            style = MaterialTheme.typography.headlineMedium.copy(
+                fontSize = MaterialTheme.typography.headlineMedium.fontSize * value
+            ),
+            color = if (isSelected)
+                MaterialTheme.colorScheme.onPrimaryContainer
+            else
+                MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = if (isSelected)
+                MaterialTheme.colorScheme.onPrimaryContainer
+            else
+                MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
+        )
     }
 }
 

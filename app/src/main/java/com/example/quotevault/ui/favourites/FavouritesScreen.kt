@@ -132,6 +132,7 @@ fun FavouritesScreen(
                                     author = quote.author,
                                     category = quote.category,
                                     isFavorite = true,
+                                    fontSizeScale = state.fontSizeScale,
                                     onFavoriteClick = {
                                         viewModel.handleIntent(FavouritesIntent.RemoveFavorite(quote.id))
                                     },
@@ -205,6 +206,7 @@ fun FavouritesScreen(
         quoteToShare?.let { quote ->
             ShareQuoteDialog(
                 quote = quote,
+                fontSizeScale = state.fontSizeScale,
                 onDismiss = { quoteToShare = null },
                 onShareComplete = { message ->
                     shareMessage = message

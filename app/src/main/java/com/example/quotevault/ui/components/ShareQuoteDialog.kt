@@ -32,6 +32,7 @@ import java.io.FileOutputStream
 @Composable
 fun ShareQuoteDialog(
     quote: Quote,
+    fontSizeScale: Float = 1.0f,
     onDismiss: () -> Unit,
     onShareComplete: (String) -> Unit = {}
 ) {
@@ -129,7 +130,7 @@ fun ShareQuoteDialog(
                 // Share as Image
                 TextButton(
                     onClick = {
-                        shareAsImage(context, quote, selectedStyle) { success ->
+                        shareAsImage(context, quote, selectedStyle, fontSizeScale) { success ->
                             if (success) {
                                 onShareComplete("Shared as image")
                             } else {
@@ -152,7 +153,7 @@ fun ShareQuoteDialog(
                 // Save as Image
                 TextButton(
                     onClick = {
-                        saveAsImage(context, quote, selectedStyle) { success ->
+                        saveAsImage(context, quote, selectedStyle, fontSizeScale) { success ->
                             if (success) {
                                 onShareComplete("Saved to gallery")
                             } else {
@@ -263,9 +264,9 @@ private fun shareAsText(context: Context, quote: Quote) {
     context.startActivity(Intent.createChooser(intent, "Share Quote"))
 }
 
-private fun shareAsImage(context: Context, quote: Quote, style: QuoteCardStyle, onResult: (Boolean) -> Unit) {
+private fun shareAsImage(context: Context, quote: Quote, style: QuoteCardStyle, fontSizeScale: Float, onResult: (Boolean) -> Unit) {
     try {
-        val bitmap = QuoteImageGenerator.generateQuoteImage(quote, style)
+        val bitmap = QuoteImageGenerator.generateQuoteImage(quote, style, fontSizeScale)
         val file = saveBitmapToCache(context, bitmap, "quote_${quote.id}_${style.name.lowercase()}.png")
         
         val uri = FileProvider.getUriForFile(
@@ -288,9 +289,9 @@ private fun shareAsImage(context: Context, quote: Quote, style: QuoteCardStyle, 
     }
 }
 
-private fun saveAsImage(context: Context, quote: Quote, style: QuoteCardStyle, onResult: (Boolean) -> Unit) {
+private fun saveAsImage(context: Context, quote: Quote, style: QuoteCardStyle, fontSizeScale: Float, onResult: (Boolean) -> Unit) {
     try {
-        val bitmap = QuoteImageGenerator.generateQuoteImage(quote, style)
+        val bitmap = QuoteImageGenerator.generateQuoteImage(quote, style, fontSizeScale)
         val filename = "quote_${quote.id}_${style.name.lowercase()}_${System.currentTimeMillis()}"
         QuoteImageGenerator.saveBitmapToGallery(context, bitmap, filename)
         onResult(true)

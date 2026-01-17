@@ -3,6 +3,7 @@ package com.example.quotevault.ui.favourites
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quotevault.data.CollectionsDataSource
+import com.example.quotevault.data.UserPreferencesDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +14,8 @@ import javax.inject.Inject
 @HiltViewModel
 class FavouritesViewModel @Inject constructor(
     private val repository: FavouritesRepository,
-    private val collectionsDataSource: CollectionsDataSource
+    private val collectionsDataSource: CollectionsDataSource,
+    private val userPreferencesDataStore: UserPreferencesDataStore
 ) : ViewModel() {
     
     private val _state = MutableStateFlow(FavouritesState())
@@ -25,6 +27,7 @@ class FavouritesViewModel @Inject constructor(
         }
         handleIntent(FavouritesIntent.LoadFavorites)
         observeFavorites()
+        observeUserPreferences()
     }
     
     fun handleIntent(intent: FavouritesIntent) {
@@ -43,6 +46,16 @@ class FavouritesViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     favoriteQuotes = favorites,
                     isLoading = false
+                )
+            }
+        }
+    }
+    
+    private fun observeUserPreferences() {
+        viewModelScope.launch {
+            userPreferencesDataStore.userPreferences.collect { preferences ->
+                _state.value = _state.value.copy(
+                    fontSizeScale = preferences.fontSize
                 )
             }
         }

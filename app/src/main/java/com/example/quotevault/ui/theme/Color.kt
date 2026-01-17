@@ -43,6 +43,7 @@ val Success = Color(0xFF10B981)
 val SuccessContainer = Color(0xFFD1FAE5)
 val Error = Color(0xFFEF4444)
 val ErrorContainer = Color(0xFFFEE2E2)
+val ErrorContainerDark = Color(0xFF653D4E)
 val Info = Color(0xFF3B82F6)
 val InfoContainer = Color(0xFFDBEAFE)
 

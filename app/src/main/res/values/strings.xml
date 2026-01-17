@@ -54,20 +54,25 @@
     <string name="theme_rose_description">Elegant pink theme</string>
     
     <!-- Account Data Screen -->
-    <string name="account_data_subtitle">Manage your account information and data</string>
+    <string name="account_data_subtitle">Manage your account settings and data</string>
     <string name="email_address">Email Address</string>
     <string name="change_password">Change Password</string>
-    <string name="change_password_description">Update your account password</string>
+    <string name="change_password_description">Update your password to keep your account secure</string>
     <string name="current_password">Current Password</string>
+    <string name="current_password_placeholder">Enter current password</string>
     <string name="new_password">New Password</string>
+    <string name="new_password_placeholder">Enter new password</string>
     <string name="confirm_new_password">Confirm New Password</string>
+    <string name="confirm_new_password_placeholder">Confirm new password</string>
     <string name="update_password">Update Password</string>
     <string name="password_requirements">Password must be at least 8 characters</string>
-    <string name="password_changed_success">Password changed successfully</string>
+    <string name="password_changed_success">✓ Password changed successfully!</string>
     <string name="passwords_dont_match">Passwords don\'t match</string>
+    <string name="show_password">Show password</string>
+    <string name="hide_password">Hide password</string>
     <string name="danger_zone">Danger Zone</string>
     <string name="delete_account">Delete Account</string>
-    <string name="delete_account_description">Permanently delete your account and all data</string>
+    <string name="delete_account_description">Once you delete your account, there is no going back. Please be certain.</string>
     <string name="delete_account_warning">⚠️ This action cannot be undone. All your quotes, collections, and preferences will be permanently deleted.</string>
     
     <!-- Favourites Screen -->

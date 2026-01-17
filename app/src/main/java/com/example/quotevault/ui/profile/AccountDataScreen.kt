@@ -63,7 +63,7 @@ fun AccountDataScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = "Manage your account settings and data",
+                    text = stringResource(R.string.account_data_subtitle),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -79,20 +79,20 @@ fun AccountDataScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         Text(
-                            text = "Change Password",
+                            text = stringResource(R.string.change_password),
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         
                         Text(
-                            text = "Update your password to keep your account secure",
+                            text = stringResource(R.string.change_password_description),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         
                         // Current Password
                         Text(
-                            text = "Current Password",
+                            text = stringResource(R.string.current_password),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -105,7 +105,7 @@ fun AccountDataScreen(
                             modifier = Modifier.fillMaxWidth(),
                             placeholder = {
                                 Text(
-                                    text = "Enter current password",
+                                    text = stringResource(R.string.current_password_placeholder),
                                     color = TextTertiaryDark
                                 )
                             },
@@ -124,9 +124,9 @@ fun AccountDataScreen(
                                         else 
                                             Icons.Default.VisibilityOff,
                                         contentDescription = if (showCurrentPassword) 
-                                            "Hide password" 
+                                            stringResource(R.string.hide_password) 
                                         else 
-                                            "Show password",
+                                            stringResource(R.string.show_password),
                                         tint = TextTertiaryDark
                                     )
                                 }
@@ -163,7 +163,7 @@ fun AccountDataScreen(
                         
                         // New Password
                         Text(
-                            text = "New Password",
+                            text = stringResource(R.string.new_password),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -176,7 +176,7 @@ fun AccountDataScreen(
                             modifier = Modifier.fillMaxWidth(),
                             placeholder = {
                                 Text(
-                                    text = "Enter new password",
+                                    text = stringResource(R.string.new_password_placeholder),
                                     color = TextTertiaryDark
                                 )
                             },
@@ -195,9 +195,9 @@ fun AccountDataScreen(
                                         else 
                                             Icons.Default.VisibilityOff,
                                         contentDescription = if (showNewPassword) 
-                                            "Hide password" 
+                                            stringResource(R.string.hide_password) 
                                         else 
-                                            "Show password",
+                                            stringResource(R.string.show_password),
                                         tint = TextTertiaryDark
                                     )
                                 }
@@ -234,7 +234,7 @@ fun AccountDataScreen(
                         
                         // Confirm Password
                         Text(
-                            text = "Confirm New Password",
+                            text = stringResource(R.string.confirm_new_password),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -247,7 +247,7 @@ fun AccountDataScreen(
                             modifier = Modifier.fillMaxWidth(),
                             placeholder = {
                                 Text(
-                                    text = "Confirm new password",
+                                    text = stringResource(R.string.confirm_new_password_placeholder),
                                     color = TextTertiaryDark
                                 )
                             },
@@ -266,9 +266,9 @@ fun AccountDataScreen(
                                         else 
                                             Icons.Default.VisibilityOff,
                                         contentDescription = if (showConfirmPassword) 
-                                            "Hide password" 
+                                            stringResource(R.string.hide_password) 
                                         else 
-                                            "Show password",
+                                            stringResource(R.string.show_password),
                                         tint = TextTertiaryDark
                                     )
                                 }
@@ -311,7 +311,7 @@ fun AccountDataScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
-                            text = if (state.isLoading) "" else "Change Password",
+                            text = if (state.isLoading) "" else stringResource(R.string.change_password),
                             enabled = state.currentPassword.isNotEmpty() && 
                                      state.newPassword.isNotEmpty() && 
                                      state.confirmPassword.isNotEmpty() && 
@@ -337,7 +337,7 @@ fun AccountDataScreen(
                                 )
                             ) {
                                 Text(
-                                    text = "✓ Password changed successfully!",
+                                    text = stringResource(R.string.password_changed_success),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                                     modifier = Modifier.padding(16.dp)
@@ -361,13 +361,13 @@ fun AccountDataScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = "Danger Zone",
+                            text = stringResource(R.string.danger_zone),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onErrorContainer
                         )
                         
                         Text(
-                            text = "Once you delete your account, there is no going back. Please be certain.",
+                            text = stringResource(R.string.delete_account_description),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onErrorContainer
                         )
@@ -381,7 +381,7 @@ fun AccountDataScreen(
                                 contentColor = MaterialTheme.colorScheme.error
                             )
                         ) {
-                            Text("Delete Account")
+                            Text(stringResource(R.string.delete_account))
                         }
                     }
                 }
@@ -395,7 +395,7 @@ fun AccountDataScreen(
                         .padding(16.dp),
                     action = {
                         TextButton(onClick = { viewModel.handleIntent(AccountDataIntent.ClearError) }) {
-                            Text("Dismiss")
+                            Text(stringResource(R.string.dismiss))
                         }
                     }
                 ) {

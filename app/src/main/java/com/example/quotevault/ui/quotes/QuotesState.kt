@@ -15,7 +15,8 @@ data class QuotesState(
     val availableCategories: List<String> = emptyList(),
     val showCollectionSheet: Boolean = false,
     val selectedQuoteForCollection: String? = null,
-    val collections: List<Collection> = emptyList()
+    val collections: List<Collection> = emptyList(),
+    val fontSizeScale: Float = 1.0f
 )
 
 data class Quote(

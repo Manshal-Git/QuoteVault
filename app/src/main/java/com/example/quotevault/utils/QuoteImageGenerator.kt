@@ -20,20 +20,24 @@ object QuoteImageGenerator {
     private const val QUOTE_TEXT_SIZE = 48f
     private const val AUTHOR_TEXT_SIZE = 36f
     
-    fun generateQuoteImage(quote: Quote, style: QuoteCardStyle = QuoteCardStyle.GRADIENT): Bitmap {
+    fun generateQuoteImage(
+        quote: Quote, 
+        style: QuoteCardStyle = QuoteCardStyle.GRADIENT,
+        fontSizeScale: Float = 1.0f
+    ): Bitmap {
         val bitmap = createBitmap(IMAGE_WIDTH, IMAGE_HEIGHT)
         val canvas = Canvas(bitmap)
         
         when (style) {
-            QuoteCardStyle.GRADIENT -> drawGradientStyle(canvas, quote)
-            QuoteCardStyle.MINIMAL -> drawMinimalStyle(canvas, quote)
-            QuoteCardStyle.ELEGANT -> drawElegantStyle(canvas, quote)
+            QuoteCardStyle.GRADIENT -> drawGradientStyle(canvas, quote, fontSizeScale)
+            QuoteCardStyle.MINIMAL -> drawMinimalStyle(canvas, quote, fontSizeScale)
+            QuoteCardStyle.ELEGANT -> drawElegantStyle(canvas, quote, fontSizeScale)
         }
         
         return bitmap
     }
     
-    private fun drawGradientStyle(canvas: Canvas, quote: Quote) {
+    private fun drawGradientStyle(canvas: Canvas, quote: Quote, fontSizeScale: Float) {
         // Draw gradient background
         val gradient = LinearGradient(
             0f, 0f, 0f, IMAGE_HEIGHT.toFloat(),
@@ -50,11 +54,11 @@ object QuoteImageGenerator {
         })
         
         drawCategory(canvas, quote.category, "#E0E7FF".toColorInt())
-        drawQuoteText(canvas, quote.text, Color.WHITE, QUOTE_TEXT_SIZE, Typeface.SERIF)
+        drawQuoteText(canvas, quote.text, Color.WHITE, QUOTE_TEXT_SIZE * fontSizeScale, Typeface.SERIF)
         drawAuthor(canvas, quote.author, Color.WHITE)
     }
     
-    private fun drawMinimalStyle(canvas: Canvas, quote: Quote) {
+    private fun drawMinimalStyle(canvas: Canvas, quote: Quote, fontSizeScale: Float) {
         canvas.drawColor(Color.WHITE)
         
         // Draw border
@@ -66,11 +70,11 @@ object QuoteImageGenerator {
         canvas.drawRect(40f, 40f, IMAGE_WIDTH - 40f, IMAGE_HEIGHT - 40f, borderPaint)
         
         drawCategory(canvas, quote.category, "#6366F1".toColorInt())
-        drawQuoteText(canvas, quote.text, "#1F2937".toColorInt(), QUOTE_TEXT_SIZE, Typeface.SERIF)
+        drawQuoteText(canvas, quote.text, "#1F2937".toColorInt(), QUOTE_TEXT_SIZE * fontSizeScale, Typeface.SERIF)
         drawAuthor(canvas, quote.author, "#6B7280".toColorInt())
     }
     
-    private fun drawElegantStyle(canvas: Canvas, quote: Quote) {
+    private fun drawElegantStyle(canvas: Canvas, quote: Quote, fontSizeScale: Float) {
         // Dark gradient background
         val gradient = LinearGradient(
             0f, 0f, IMAGE_WIDTH.toFloat(), IMAGE_HEIGHT.toFloat(),
@@ -89,7 +93,7 @@ object QuoteImageGenerator {
         drawCornerDecoration(canvas)
         drawCategory(canvas, quote.category, "#F59E0B".toColorInt())
         drawQuoteText(canvas, quote.text,
-            "#FCD34D".toColorInt(), QUOTE_TEXT_SIZE + 4f, Typeface.SERIF)
+            "#FCD34D".toColorInt(), (QUOTE_TEXT_SIZE + 4f) * fontSizeScale, Typeface.SERIF)
         drawAuthor(canvas, quote.author, "#FDE68A".toColorInt())
     }
     

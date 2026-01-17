@@ -3,6 +3,7 @@ package com.example.quotevault.ui.quotes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quotevault.data.CollectionsDataSource
+import com.example.quotevault.data.UserPreferencesDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +14,8 @@ import javax.inject.Inject
 @HiltViewModel
 class QuotesViewModel @Inject constructor(
     private val repository: QuotesRepository,
-    private val collectionsDataSource: CollectionsDataSource
+    private val collectionsDataSource: CollectionsDataSource,
+    private val userPreferencesDataStore: UserPreferencesDataStore
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(QuotesState())
@@ -26,6 +28,7 @@ class QuotesViewModel @Inject constructor(
         handleIntent(QuotesIntent.LoadQuotes)
         handleIntent(QuotesIntent.LoadQuoteOfTheDay)
         observeCollections()
+        observeUserPreferences()
     }
     
     private fun observeCollections() {
@@ -36,6 +39,16 @@ class QuotesViewModel @Inject constructor(
                         compareByDescending<com.example.quotevault.data.Collection> { it.isDefault }
                             .thenBy { it.name }
                     )
+                )
+            }
+        }
+    }
+    
+    private fun observeUserPreferences() {
+        viewModelScope.launch {
+            userPreferencesDataStore.userPreferences.collect { preferences ->
+                _state.value = _state.value.copy(
+                    fontSizeScale = preferences.fontSize
                 )
             }
         }

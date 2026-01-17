@@ -65,7 +65,7 @@ fun CategoryChip(
  * 
  * Features:
  * - Category chip at the top
- * - Quote text in headline typography
+ * - Quote text in headline typography with font size scaling
  * - Author name with attribution dash
  * - Favorite button that toggles between filled and outlined states
  * - Share button
@@ -76,6 +76,7 @@ fun CategoryChip(
  * @param author The author name
  * @param category The category label
  * @param isFavorite Whether the quote is marked as favorite
+ * @param fontSizeScale Font size multiplier for quote text (default 1.0f)
  * @param onFavoriteClick Callback when favorite button is clicked
  * @param onShareClick Callback when share button is clicked
  * @param onCardClick Callback when the card itself is clicked
@@ -87,6 +88,7 @@ fun QuoteCard(
     author: String,
     category: String,
     isFavorite: Boolean = false,
+    fontSizeScale: Float = 1.0f,
     onFavoriteClick: () -> Unit = {},
     onShareClick: () -> Unit = {},
     onCardClick: () -> Unit = {},
@@ -117,10 +119,12 @@ fun QuoteCard(
 
         Spacer(Modifier.height(Dimensions.spaceSM))
 
-        // Quote text with headline typography
+        // Quote text with headline typography and font size scaling
         Text(
             text = quote,
-            style = MaterialTheme.typography.headlineLarge,
+            style = MaterialTheme.typography.headlineLarge.copy(
+                fontSize = MaterialTheme.typography.headlineLarge.fontSize * fontSizeScale
+            ),
             color = MaterialTheme.colorScheme.onSurface
         )
 
@@ -182,17 +186,19 @@ fun PreviewQuoteCard() {
  * - Gradient background from indigo to purple
  * - White text for contrast
  * - Center-aligned quote and author
- * - Display typography for quote text
+ * - Display typography for quote text with font size scaling
  * - Extra padding for visual emphasis
  * 
  * @param quote The quote text to display
  * @param author The author name
+ * @param fontSizeScale Font size multiplier for quote text (default 1.0f)
  * @param modifier Optional modifier for customization
  */
 @Composable
 fun FeaturedQuoteCard(
     quote: String,
     author: String,
+    fontSizeScale: Float = 1.0f,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -211,10 +217,12 @@ fun FeaturedQuoteCard(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(Dimensions.spaceMD)
     ) {
-        // Quote text with display typography
+        // Quote text with display typography and font size scaling
         Text(
             text = quote,
-            style = MaterialTheme.typography.displayLarge,
+            style = MaterialTheme.typography.displayLarge.copy(
+                fontSize = MaterialTheme.typography.displayLarge.fontSize * fontSizeScale
+            ),
             color = androidx.compose.ui.graphics.Color.White,
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
