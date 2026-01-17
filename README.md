@@ -12,7 +12,7 @@ QuoteVault is a modern Android application for discovering, collecting, and shar
 - **Quote of the Day**: Featured daily quote with overlay presentation
 - **Sharing**: Share quotes as images with customizable styles
 - **Profile Management**: User preferences, themes, and account settings
-- **Notifications**: Configurable quote notifications
+- **Notification Preferences**: Configurable quote notifications
 
 ## Tech Stack
 
@@ -24,8 +24,8 @@ QuoteVault is a modern Android application for discovering, collecting, and shar
 - **Networking**: Ktor
 - **Local Storage**: DataStore
 - **Build System**: Gradle with Kotlin DSL
-- **Minimum SDK**: 26 (Android 8.0)
-- **Target SDK**: 36
+- **Minimum SDK**: 26 (Android 8)
+- **Target SDK**: 36 (Android 16)
 
 ## Prerequisites
 
@@ -66,7 +66,7 @@ If not automatic, you can manually:
 
 ### 4. Build the Project
 
-## Command Line
+#### Command Line
 
 ```bash
 # Clean build
@@ -79,11 +79,13 @@ If not automatic, you can manually:
 ./gradlew installDebug
 ```
 
-## Android Studio
-**Windows** Shift + F10
-**MacOS** Command + R
+#### Android Studio
+For Windows press `Shift` + `F10`
 
-### Project Structure
+For MacOS press `Command` + `R`
+
+
+## Project Structure
 
 ```
 QuoteVault/
