@@ -5,6 +5,7 @@ import com.example.quotevault.data.Collection
 data class QuotesState(
     val quotes: List<Quote> = emptyList(),
     val filteredQuotes: List<Quote> = emptyList(),
+    val visibleQuotes: List<Quote> = emptyList(),
     val quoteOfTheDay: Quote? = null,
     val isLoadingQuoteOfTheDay: Boolean = false,
     val isLoading: Boolean = false,
@@ -20,7 +21,10 @@ data class QuotesState(
     val isConnected: Boolean = true,
     val isOfflineMode: Boolean = false,
     val offlineMessage: String? = null,
-    val hasOfflineData: Boolean = false
+    val hasOfflineData: Boolean = false,
+    val isLoadingMore: Boolean = false,
+    val currentPage: Int = 0,
+    val hasMorePages: Boolean = false
 )
 
 data class Quote(

@@ -54,6 +54,19 @@ fun QuotesDiscoveryScreen(
             }
         }
     }
+
+    LaunchedEffect(state.visibleQuotes.size, state.filteredQuotes.size) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1 }
+            .collect { lastVisibleIndex ->
+                val shouldLoadMore =
+                    lastVisibleIndex >= state.visibleQuotes.lastIndex - 2 &&
+                        state.hasMorePages &&
+                        !state.isLoadingMore
+                if (shouldLoadMore) {
+                    viewModel.handleIntent(QuotesIntent.LoadNextPage)
+                }
+            }
+    }
     
     Box(modifier = modifier.fillMaxSize()) {
         // Offline Status Banner
@@ -290,7 +303,7 @@ fun QuotesDiscoveryScreen(
                                 verticalArrangement = Arrangement.spacedBy(16.dp),
                             ) {
                                 items(
-                                    items = state.filteredQuotes,
+                                    items = state.visibleQuotes,
                                     key = { quote -> quote.id }
                                 ) { quote ->
                                     QuoteCard(
@@ -310,6 +323,19 @@ fun QuotesDiscoveryScreen(
                                         },
                                         modifier = Modifier
                                     )
+                                }
+
+                                if (state.hasMorePages) {
+                                    item(key = "loading_more") {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 8.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            CircularProgressIndicator()
+                                        }
+                                    }
                                 }
                             }
                         }
