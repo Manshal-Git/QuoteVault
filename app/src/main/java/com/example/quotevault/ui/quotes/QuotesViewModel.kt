@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private const val PAGE_SIZE = 25
+
 @HiltViewModel
 class QuotesViewModel @Inject constructor(
     private val repository: QuotesRepository,
@@ -106,6 +108,7 @@ class QuotesViewModel @Inject constructor(
             is QuotesIntent.ShareQuote -> shareQuote(intent.quote)
             is QuotesIntent.SearchQuotes -> searchQuotes(intent.query)
             is QuotesIntent.FilterByCategory -> filterByCategory(intent.category)
+            is QuotesIntent.LoadNextPage -> loadNextPage()
             is QuotesIntent.CloseCollectionSheet -> closeCollectionSheet()
             is QuotesIntent.ClearError -> clearError()
             is QuotesIntent.RetryConnection -> retryConnection()
@@ -139,17 +142,8 @@ class QuotesViewModel @Inject constructor(
                         quote
                     }
                 }
-                val updatedFilteredQuotes = _state.value.filteredQuotes.map { quote ->
-                    if (quote.id == quoteId) {
-                        quote.copy(isFavorite = collectionsDataSource.isQuoteInCollection(quoteId, collectionId))
-                    } else {
-                        quote
-                    }
-                }
-                _state.value = _state.value.copy(
-                    quotes = updatedQuotes,
-                    filteredQuotes = updatedFilteredQuotes
-                )
+                _state.value = _state.value.copy(quotes = updatedQuotes)
+                applyFilters()
             }
         }
     }
@@ -189,11 +183,11 @@ class QuotesViewModel @Inject constructor(
                     val categories = quotes.map { it.category }.distinct().sorted()
                     _state.value = _state.value.copy(
                         quotes = quotes,
-                        filteredQuotes = quotes,
                         availableCategories = categories,
                         isLoading = false,
                         hasOfflineData = quotes.isNotEmpty()
                     )
+                    applyFilters()
                     
                     // Clear offline message if we successfully loaded quotes
                     if (_state.value.isConnected) {
@@ -223,12 +217,12 @@ class QuotesViewModel @Inject constructor(
                     val categories = quotes.map { it.category }.distinct().sorted()
                     _state.value = _state.value.copy(
                         quotes = quotes,
-                        filteredQuotes = quotes,
                         availableCategories = categories,
                         isLoading = false,
                         hasOfflineData = true,
                         offlineMessage = "Showing cached quotes from your last online session."
                     )
+                    applyFilters()
                 }
                 .onFailure { error ->
                     _state.value = _state.value.copy(
@@ -285,15 +279,8 @@ class QuotesViewModel @Inject constructor(
                     quote
                 }
             }
-            val updatedFilteredQuotes = _state.value.filteredQuotes.map { quote ->
-                if (quote.id == quoteId) {
-                    quote.copy(isFavorite = !quote.isFavorite)
-                } else {
-                    quote
-                }
-            }
-            _state.value =
-                _state.value.copy(quotes = updatedQuotes, filteredQuotes = updatedFilteredQuotes)
+            _state.value = _state.value.copy(quotes = updatedQuotes)
+            applyFilters()
 
             repository.toggleFavorite(quoteId)
                 .onFailure { error ->
@@ -305,18 +292,11 @@ class QuotesViewModel @Inject constructor(
                             quote
                         }
                     }
-                    val revertedFilteredQuotes = _state.value.filteredQuotes.map { quote ->
-                        if (quote.id == quoteId) {
-                            quote.copy(isFavorite = !quote.isFavorite)
-                        } else {
-                            quote
-                        }
-                    }
                     _state.value = _state.value.copy(
                         quotes = revertedQuotes,
-                        filteredQuotes = revertedFilteredQuotes,
                         error = error.message ?: "Failed to update favorite"
                     )
+                    applyFilters()
                 }
         }
     }
@@ -350,7 +330,29 @@ class QuotesViewModel @Inject constructor(
             matchesSearch && matchesCategory
         }
 
-        _state.value = _state.value.copy(filteredQuotes = filtered)
+        val firstPage = filtered.take(PAGE_SIZE)
+        _state.value = _state.value.copy(
+            filteredQuotes = filtered,
+            visibleQuotes = firstPage,
+            currentPage = if (firstPage.isEmpty()) 0 else 1,
+            hasMorePages = filtered.size > firstPage.size,
+            isLoadingMore = false
+        )
+    }
+
+    private fun loadNextPage() {
+        val state = _state.value
+        if (state.isLoadingMore || !state.hasMorePages) return
+
+        val nextPage = state.currentPage + 1
+        val nextVisibleCount = nextPage * PAGE_SIZE
+        val nextVisible = state.filteredQuotes.take(nextVisibleCount)
+
+        _state.value = state.copy(
+            currentPage = nextPage,
+            visibleQuotes = nextVisible,
+            hasMorePages = nextVisible.size < state.filteredQuotes.size
+        )
     }
     
     private fun retryConnection() {

@@ -7,5 +7,6 @@ sealed class FavouritesIntent {
     data class RemoveFavorite(val quoteId: String) : FavouritesIntent()
     data class ShareQuote(val quote: Quote) : FavouritesIntent()
     object ClearAllFavorites : FavouritesIntent()
+    object LoadNextPage : FavouritesIntent()
     object ClearError : FavouritesIntent()
 }

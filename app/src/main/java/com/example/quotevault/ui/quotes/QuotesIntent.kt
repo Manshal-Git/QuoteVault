@@ -11,6 +11,7 @@ sealed class QuotesIntent {
     data class ShareQuote(val quote: Quote) : QuotesIntent()
     data class SearchQuotes(val query: String) : QuotesIntent()
     data class FilterByCategory(val category: String?) : QuotesIntent()
+    object LoadNextPage : QuotesIntent()
     object CloseCollectionSheet : QuotesIntent()
     object ClearError : QuotesIntent()
     object RetryConnection : QuotesIntent()

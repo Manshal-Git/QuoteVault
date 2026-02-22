@@ -3,15 +3,18 @@ package com.example.quotevault.ui.favourites
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -33,6 +36,20 @@ fun FavouritesScreen(
     var showClearDialog by rememberSaveable { mutableStateOf(false) }
     var quoteToShare by rememberSaveable { mutableStateOf<Quote?>(null) }
     var shareMessage by rememberSaveable { mutableStateOf<String?>(null) }
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(state.visibleFavoriteQuotes.size, state.favoriteQuotes.size) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1 }
+            .collect { lastVisibleIndex ->
+                val shouldLoadMore =
+                    lastVisibleIndex >= state.visibleFavoriteQuotes.lastIndex - 2 &&
+                        state.hasMorePages &&
+                        !state.isLoadingMore
+                if (shouldLoadMore) {
+                    viewModel.handleIntent(FavouritesIntent.LoadNextPage)
+                }
+            }
+    }
 
     Box(modifier) {
         Column {
@@ -98,6 +115,7 @@ fun FavouritesScreen(
 
                     else -> {
                         LazyColumn(
+                            state = listState,
                             modifier = Modifier
                                 .fillMaxSize(),
                             contentPadding = PaddingValues(vertical = 16.dp),
@@ -125,7 +143,7 @@ fun FavouritesScreen(
                             }
 
                             items(
-                                items = state.favoriteQuotes,
+                                items = state.visibleFavoriteQuotes,
                                 key = { quote -> quote.id }
                             ) { quote ->
                                 QuoteCard(
@@ -145,6 +163,19 @@ fun FavouritesScreen(
                                     },
                                     modifier = Modifier.padding(horizontal = 16.dp)
                                 )
+                            }
+
+                            if (state.hasMorePages) {
+                                item(key = "loading_more") {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 8.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator()
+                                    }
+                                }
                             }
                         }
                     }
